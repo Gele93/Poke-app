@@ -4,7 +4,7 @@ import { useEffect } from "react";
 function Menu({ themeAudio, setThemeAudio, setIsSound, isSound, battleAudio, idleAudio, setIsMenu, playerPokemons, setPlayerPokemons }) {
 
     useEffect(() => {
-        const theme = new Audio('/theme.mp3');
+        const theme = new Audio('./theme.mp3');
         theme.loop = true;
         theme.volume = 0.05
         setThemeAudio(theme);

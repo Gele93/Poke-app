@@ -17,7 +17,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
     const [defendModif, setDefendModif] = useState(0)
     const [boostModif, setBoostModif] = useState(0)
     const [hpPotAmount, setHpPotAmount] = useState(0)
-    const [boostPotAmount, setBoostPotAmount] = useState(1)
+    const [boostPotAmount, setBoostPotAmount] = useState(0)
     const [isAbilityModalOpen, setIsAbilityModalOpen] = useState(false)
     const [isEnemydexModalOpen, setIsEnemydexModalOpen] = useState(false)
     const [enemyFloatText, setEnemyFloatText] = useState()
@@ -31,8 +31,8 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
 
     useEffect(() => {
-        const idle = new Audio('/idle.mp3');
-        const battle = new Audio('/battle.mp3');
+        const idle = new Audio('./idle.mp3');
+        const battle = new Audio('./battle.mp3');
 
         idle.loop = true;
         battle.loop = true;
@@ -184,17 +184,20 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                 updatedBoostDuration = boostDuration - 1
             }
 */
-         //   enemyCalculatedDmg = applyDmgModifier(enemyCalculatedDmg, enemy.type, choosenPokemon.dmgRel)
+            //   enemyCalculatedDmg = applyDmgModifier(enemyCalculatedDmg, enemy.type, choosenPokemon.dmgRel)
 
             const updatedCurHp = enemyCurHp - enemyCalculatedDmg
 
-            if (enemyCalculatedDmg > 0) {
-                console.log("MEND")
+            //3 => max defenseduration 
+            if (defenseDuration === 3) {
+                setEnemyFloatText("")
+            } else if (enemyCalculatedDmg > 0) {
                 setEnemyFloatText(enemyCalculatedDmg)
             } else if (isMiss) {
                 setEnemyFloatText("Miss")
                 setIsMiss(false)
             }
+
             setIsEnemyFloatText(true)
             setTimeout(() => {
                 setIsEnemyFloatText(false)
@@ -227,6 +230,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             let dmg = 0
             let nar = ""
             const hitChance = Math.ceil(Math.random() * 100)
+
             if (hitChance > 80) {
                 dmg = ((((2 / 5 + 2) * attack * 60 / defense) / 50) + 2) * Z / 255
                 dmg = dmg * 2
@@ -307,7 +311,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
             let curPlayerDmg = playerDmg
 
-         //   curPlayerDmg = applyDmgModifier(curPlayerDmg, choosenPokemon.type, enemy.dmgRel)
+            //   curPlayerDmg = applyDmgModifier(curPlayerDmg, choosenPokemon.type, enemy.dmgRel)
 
             const updatedCurHp = playerCurHp - curPlayerDmg
 
@@ -365,7 +369,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             nar = `Normal hit ${dmg} dmg`
         }
 
-//        dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
+        //        dmg = applyDmgModifier(dmg, enemy.type, choosenPokemon.dmgRel)
 
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
@@ -403,7 +407,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             nar = `Heavy hit ${dmg} dmg`
         }
 
-        
+
 
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
