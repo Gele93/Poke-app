@@ -756,7 +756,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                 <>
                     <div className='game-over'>Game over</div>
                     <button onClick={handleRestart} className='restart' type='button'>Restart</button>
-                    <img className='game-over-pic' src='https://media.discordapp.net/attachments/1263120726966272084/1267833588959805574/file_2.png?ex=66aa398a&is=66a8e80a&hm=85b88ee31f0a18501ad1cdb646929204abfbc0f5a8af208fa1c139077ffeec79&=&format=webp&quality=lossless&width=800&height=450' />
+                    <img className='game-over-pic' src='./gameover.png' />
                 </>
             ) : (
                 <>
@@ -764,7 +764,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                         <>
                             <div className='game-won'>You catched them all!</div>
                             <button onClick={handleRestart} className='restart' type='button'>Restart</button>
-                            <img className='game-won-pic' src='https://media.discordapp.net/attachments/1263120726966272084/1267860952372477972/file_3.png?ex=66aa5306&is=66a90186&hm=b0b6f7fd2418dcc920d780fe88b40136fabf29e51ce29ff3966f52334f2000a4&=&format=webp&quality=lossless&width=687&height=386' />
+                            <img className='game-won-pic' src='./gamewon.png' />
                         </>) : (
                         <>
                             {isBattle ? (
