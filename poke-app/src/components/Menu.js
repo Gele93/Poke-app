@@ -21,7 +21,7 @@ function Menu({ themeAudio, setThemeAudio, setIsSound, isSound, battleAudio, idl
         setIsSound(true)
     }
 
-    const handleStartClick = ( ) => {
+    const handleStartClick = () => {
         setIsMenu(false)
         themeAudio.pause()
     }
@@ -34,7 +34,7 @@ function Menu({ themeAudio, setThemeAudio, setIsSound, isSound, battleAudio, idl
                 <img className="logo" src="./menulogo.png" />
             </div>
             <div className='description-container'>
-                <img className="oak-prof" src="./oakprof.png"/>
+                <img className="oak-prof" src="./oakprof.png" />
                 <ul className='description'>
                     <li className="description-li">Choose 3 starting pokemon & press Start!</li>
                     <li className="description-li">Select a location to travel</li>
@@ -43,7 +43,11 @@ function Menu({ themeAudio, setThemeAudio, setIsSound, isSound, battleAudio, idl
                 </ul>
             </div>
             <div className='start-container'>
-                <button onClick={handleStartClick} className="start-button" type='button'>{playerPokemons.length === 3 ? "Start Game!" : ""}</button>
+                {playerPokemons.length === 3 ? (
+                    <button onClick={handleStartClick} className="start-button" type='button'>Start Game!</button>
+                ) : (
+                    null
+                )}
             </div>
             <ChooseStarter playerPokemons={playerPokemons} setPlayerPokemons={setPlayerPokemons} />
             {isSound ? (
