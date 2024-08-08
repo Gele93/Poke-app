@@ -6,7 +6,7 @@ import Enemydexmodal from './Enemydex'
 import Shop from "./Shop"
 import Medic from './Medic'
 
-function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, setIsPokedexModalOpen, isPokedexModalOpen, enemy, setEnemy, setCombatLog, combatLog, isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
+function Battle({ possibleEncounters, shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, setIsPokedexModalOpen, isPokedexModalOpen, enemy, setEnemy, setCombatLog, combatLog, isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
 
     const [enemyDmg, setEnemyDmg] = useState(0)
     const [enemyCurHp, setEnemyCurHp] = useState(0)
@@ -29,6 +29,15 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
     const [gold, setGold] = useState(0)
     const [isFirstFightDone, setIsFirstFightDone] = useState(false)
     const [isMiss, setIsMiss] = useState(false)
+    const [hoverShopOrMedic, setHoverShopOrMedic] = useState("")
+    const [isCatchHover, setIsCatchHover] = useState(false)
+    const [isCatchPossible, setIsCatchPossible] = useState(false)
+    const [isCatchTried, setIsCatchTried] = useState(false)
+    const [isCatched, setIsCatched] = useState(false)
+    const [isBattleEnd, setIsBattleEnd] = useState(false)
+    const [goldDrop, setGoldDrop] = useState(0)
+    const [hpPotDrop, setHpPotDrop] = useState(false)
+    const [boostPotDrop, setBoostPotDrop] = useState(false)
 
     useEffect(() => {
         const idle = new Audio('./idle.mp3');
@@ -102,9 +111,9 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
                         console.error(error)
                     }
                 }
-                const fetchRandomPokemon = async (number) => {
+                const fetchPokemonFromLocation = async (randomEncounterUrl) => {
                     try {
-                        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${number}`);
+                        const response = await fetch(randomEncounterUrl);
                         const data = await response.json();
                         let pokeData = {
                             name: data.species.name,
@@ -134,8 +143,10 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
                     };
                 }
 
-                const randomNumber = Math.ceil(Math.random() * 1025)
-                await fetchRandomPokemon(randomNumber)
+                const randomEncounterNr = Math.floor(Math.random() * possibleEncounters.length)
+                const randomEncounterUrl = possibleEncounters[randomEncounterNr].pokemon.url
+
+                await fetchPokemonFromLocation(randomEncounterUrl)
 
             }
             enemyAppear()
@@ -190,6 +201,9 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
 
             const updatedCurHp = enemyCurHp - enemyCalculatedDmg
 
+            if (isCatchTried) {
+                setEnemyFloatText("Dodge")
+            }
             //3 => max defenseduration 
             if (defenseDuration === 3) {
                 setEnemyFloatText("")
@@ -252,6 +266,10 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
 
             setEnemyCurHp(updatedCurHp)
 
+            if (updatedCurHp < enemy.hp * 0.5) {
+                setIsCatchPossible(true)
+            }
+
             let goldDrop = 0
             let updatedBoostPotAmount = boostPotAmount
             let updatedHpPotAmount = hpPotAmount
@@ -261,17 +279,21 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
                 const hpDropChance = Math.floor(Math.random() * 100)
                 const boostDropChance = Math.floor(Math.random() * 100)
                 goldDrop = Math.round(enemy.hp / 10)
-
+                setGoldDrop(goldDrop)
                 nar += ` You gained ${goldDrop} gold!`
 
                 if (hpDropChance < 30) {
                     updatedHpPotAmount++
+                    setHpPotDrop(true)
                     nar += " You gained 1 Health Potion!"
                 }
-                if (boostDropChance < 100) {
+                if (boostDropChance < 30) {
                     updatedBoostPotAmount++
+                    setBoostPotDrop(true)
                     nar += " You gained 1 Boost Potion!"
                 }
+
+                setIsBattleEnd(true)
 
                 if (playerCurHp > 0) {
                     let updatedPlayerPokemons = [...playerPokemons]
@@ -307,6 +329,7 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
                 if (updatedCurHp > 0) {
                     setPlayerDmg(dmg)
                 }
+                setIsCatchTried(false)
                 setGold(prev => prev + goldDrop)
                 setIsFirstFightDone(true)
                 updateCombatLog(enemy.name, nar)
@@ -627,58 +650,132 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
         }
     }, [playerCurHp])
 
-
-    const handleCatch = () => {
-        document.querySelector(".battle-container").style.backgroundImage = ""
+    const handleCatchClick = () => {
+        let hpFraction = enemyCurHp / enemy.hp
+        let k = 1.5
+        const catchChance = 1 - Math.exp(-k * (1 - hpFraction));
+        const drawChance = Math.random()
+        const success = drawChance < catchChance
         let nar = ""
-        const catchChance = Math.floor(Math.random() * 100)
+        let dmg = 0
 
+        if (success) {
+            nar = `You catched ${enemy.name}!`
+            let goldGain = Math.round(enemy.hp / 5)
+            setGold(prev => prev + goldGain)
+            setGoldDrop(goldGain)
+            setNar(nar)
+            updateCombatLog(choosenPokemon.name, nar)
+            setIsBattleEnd(true)
+            setIsCatched(true)
+        } else {
+            nar = `${enemy.name} sliped away from your pokeball.`
+            setIsCatchTried(true)
+            setIsAttackDisabled(true)
+            setIsPlayerTurn(false)
+            setNar(nar)
+            updateCombatLog(choosenPokemon.name, nar)
+            setEnemyDmg(dmg)
+        }
+    }
 
-        if (catchChance > 49) {
-            nar = `You catched ${enemy.name}! You can use him in your next fights!
-            Choose another location!`
-            let updatedPlayerPokemons = [...playerPokemons]
+    const handleBattleEndOk = () => {
+        document.querySelector(".battle-container").style.backgroundImage = ""
+        let nar = "Choose another location!"
+        let updatedPlayerPokemons = [...playerPokemons]
+
+        if (isCatched) {
             let catchedEnemy = {
                 ...enemy,
                 choosen: false,
                 dead: false,
             }
             updatedPlayerPokemons.push(catchedEnemy)
-
-            setPlayerPokemons(updatedPlayerPokemons)
-            setIsPlayerChoosen(false)
-            setIsBattle(false)
-            setEnemy("")
-            setNar(nar)
-            updateCombatLog(choosenPokemon.name, `You catched ${enemy.name}!`)
-            setActivePanel("location")
-
-        } else {
-            nar = `${enemy.name} has slipped away..
-            Choose another location!`
-            setIsPlayerChoosen(false)
-            setIsBattle(false)
-            setEnemy("")
-            setNar(nar)
-            updateCombatLog(choosenPokemon.name, `${enemy.name} has slipped away..`)
-            setActivePanel("location")
         }
 
-    }
 
+        updatedPlayerPokemons = updatedPlayerPokemons.map(p => {
+            if (p.name === choosenPokemon.name) {
+                p.remainingHp = playerCurHp
+                return { ...p, }
+            } else {
+                return { ...p }
+            }
+        })
+        setPlayerPokemons(updatedPlayerPokemons)
 
-    const handleLeave = () => {
-        document.querySelector(".battle-container").style.backgroundImage = ""
-
-        let nar = `You set ${enemy.name} free.
-        Choose another location!`
-        setNar(nar)
-        updateCombatLog(choosenPokemon.name, `You set ${enemy.name} free.`)
         setIsPlayerChoosen(false)
         setIsBattle(false)
+        setHpPotDrop(false)
+        setBoostPotDrop(false)
+        setIsBattleEnd(false)
         setEnemy("")
+        setNar(nar)
+        setIsCatchTried(false)
+        setIsCatchPossible(false)
+        setIsCatched(false)
+        updateCombatLog(choosenPokemon.name, `You catched ${enemy.name}!`)
         setActivePanel("location")
     }
+
+
+    /*
+    
+        const handleCatch = () => {
+            document.querySelector(".battle-container").style.backgroundImage = ""
+            let nar = ""
+            const catchChance = Math.floor(Math.random() * 100)
+    
+    
+            if (catchChance > 49) {
+                nar = `You catched ${enemy.name}! You can use him in your next fights!
+                Choose another location!`
+                let updatedPlayerPokemons = [...playerPokemons]
+                let catchedEnemy = {
+                    ...enemy,
+                    choosen: false,
+                    dead: false,
+                }
+                updatedPlayerPokemons.push(catchedEnemy)
+    
+                setPlayerPokemons(updatedPlayerPokemons)
+                setIsPlayerChoosen(false)
+                setIsBattle(false)
+                setEnemy("")
+                setNar(nar)
+                updateCombatLog(choosenPokemon.name, `You catched ${enemy.name}!`)
+                setActivePanel("location")
+    
+            } else {
+                nar = `${enemy.name} has slipped away..
+                Choose another location!`
+                setIsPlayerChoosen(false)
+                setIsBattle(false)
+                setEnemy("")
+                setNar(nar)
+                updateCombatLog(choosenPokemon.name, `${enemy.name} has slipped away..`)
+                setActivePanel("location")
+            }
+    
+        }
+    
+    
+        const handleLeave = () => {
+            document.querySelector(".battle-container").style.backgroundImage = ""
+    
+            let nar = `You set ${enemy.name} free.
+            Choose another location!`
+            setNar(nar)
+            updateCombatLog(choosenPokemon.name, `You set ${enemy.name} free.`)
+            setIsPlayerChoosen(false)
+            setIsBattle(false)
+            setEnemy("")
+            setActivePanel("location")
+        }
+    */
+
+
+
 
     const handleRestart = () => {
         setIsMenu(true)
@@ -746,6 +843,27 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
         setShopOrMedic("Medic")
     }
 
+    const handleHoverShop = () => {
+        setHoverShopOrMedic("Merchant")
+    }
+    const handleHoverShopOff = () => {
+        setHoverShopOrMedic("")
+    }
+    const handleHoverMedic = () => {
+        setHoverShopOrMedic("Poke Center")
+    }
+    const handleHoverMedicOff = () => {
+        setHoverShopOrMedic("")
+    }
+
+    const handleCatchHover = () => {
+        setIsCatchHover(true)
+    }
+    const handleCatchHoverOff = () => {
+        setIsCatchHover(false)
+    }
+
+
     return (
         <div className={`${activePanel === "battle" ? "active" : null} battle-container`}>
             <div className='inventory'>
@@ -804,6 +922,7 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
                                                             <button disabled={toggleSpecialDisabled()} onClick={(e) => handleSpecialAttack(e)} className="attack-button" type="button">Special Attack {isSpecialDisabled ? `(${specialCd})` : null}</button>
                                                             <button disabled={isAttackDisabled} onClick={(e) => handleDefend(e)} className="attack-button" type="button">Defend</button>
                                                             <button disabled={toggleMendDisabled()} onClick={(e) => handleMend(e)} className="attack-button" type="button">Mend {isMendDisabled ? `(${mendCd})` : null}</button>
+                                                            <button disabled={!isCatchPossible || isAttackDisabled} onClick={handleCatchClick} onMouseOver={handleCatchHover} onMouseOut={handleCatchHoverOff} className="attack-button catch-button" type="button">Catch!<img src='/pokeball.png' className={`${isCatchHover && "hover"} catch-pokeball`} /></button>
                                                         </div>
                                                         <div className='items-container'>
                                                             <div className='items-title'>Items</div>
@@ -837,13 +956,7 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
                                                     </>
                                                 </div>
                                             </div>
-                                            {enemyCurHp <= 0 ? (
-                                                <div className='catch-pokemon'>
-                                                    <button onClick={handleCatch} className='catch' type='button'>Catch it</button>
-                                                    <button onClick={handleLeave} className='leave' type='button'>Leave it</button>
-                                                </div>) : (
-                                                null
-                                            )}
+
                                         </>
 
                                     ) : (
@@ -855,10 +968,10 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
                                     {shopOrMedic === 0 ? (
                                         <div className='shop-medic-buttons'>
                                             <div className='shop-button-div'>
-                                                <img onClick={handleShopClick} className='shop-button-pic' src="/shop.png" />
+                                                <img onClick={handleShopClick} onMouseOver={handleHoverShop} onMouseOut={handleHoverShopOff} className='shop-button-pic' src="/shop.png" />
                                             </div>
                                             <div className='medic-button-div'>
-                                                <img onClick={handleMedicClick} className="medic-button-pic" src="/medic.png" />
+                                                <img onClick={handleMedicClick} onMouseOver={handleHoverMedic} onMouseOut={handleHoverMedicOff} className="medic-button-pic" src="/medic.png" />
 
                                             </div>
                                         </div>
@@ -879,7 +992,12 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
             )}
 
 
-            {enemy ? (<div className='current-location'>{capitalize(currentLocation)}</div>) : null}
+            {enemy ? (
+                <div className='current-location'>{capitalize(currentLocation)}</div>
+            ) : (
+                <div className='current-location'>{hoverShopOrMedic}</div>
+
+            )}
             {isAbilityModalOpen ? (
                 <Abilitymodal choosenPokemon={choosenPokemon} setIsAbilityModalOpen={setIsAbilityModalOpen} />
             ) : null}
@@ -891,6 +1009,32 @@ function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAu
             ) : null}
             {isEnemydexModalOpen ? (
                 <Enemydexmodal enemy={enemy} setIsEnemydexModalOpen={setIsEnemydexModalOpen} />
+            ) : null}
+            {isBattleEnd ? (
+                <div className='battle-end-modal'>
+                    {isCatched ? (
+                        <h1 className='battle-end-modal-title'>You catched {enemy.name}!</h1>
+                    ) : (
+                        <h1 className='battle-end-modal-title'>You defeated {enemy.name}!</h1>
+                    )}
+                    <div className='drop-list'>
+                        <div className='inv-slot'>
+                            <img className="inv-pic" src="./gold.png" />
+                            <div className='inv-amount'>x {goldDrop}</div>
+                        </div>
+                        {hpPotDrop &&
+                            <div className='inv-slot'>
+                                <img className="inv-pic" src="./hppot.png" />
+                            </div>
+                        }
+                        {boostPotDrop &&
+                            <div className='inv-slot'>
+                                <img className="inv-pic" src="./boostpot.png" />
+                            </div>
+                        }
+                    </div>
+                    <button onClick={handleBattleEndOk} className='battle-end-ok' type='button'>Ok</button>
+                </div>
             ) : null}
 
         </div>

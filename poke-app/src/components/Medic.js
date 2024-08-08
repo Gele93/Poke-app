@@ -11,9 +11,6 @@ function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemon
     const [isHealFloat, setIsHealFloat] = useState(false)
     const [healFloat, setHealFloat] = useState("")
 
-    setGold(2000)
-
-
     const drawPlayerHpBarSide = (currentHp, maxHp, pokeName) => {
         let greenPercent = (currentHp / maxHp) * 100
         if (greenPercent < 0) greenPercent = 0

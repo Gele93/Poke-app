@@ -511,7 +511,7 @@ opacity: 100%;
   width: 20vw;
   transition: filter 0.5s;
   image-rendering: pixelated;
-  filter: drop-shadow(30px 20px 15px #00000066) grayscale(40%);;
+  filter: drop-shadow(30px 20px 15px #00000042) grayscale(40%);;
 }
 
 
@@ -531,6 +531,7 @@ opacity: 100%;
   width: 16vw;
   right: 6vw;
   bottom: 0;
+  filter: drop-shadow(10px 10px 1px #00000080)
 }
 .defend {
   box-shadow: 25px -25px 20px rgba(0, 0, 255, 0.288);
@@ -913,6 +914,25 @@ text-align: left;
 .attack-button:active {
   transform: scale(0.9);
 }
+.catch-button {
+  width: 20vw;
+}
+.catch-pokeball {
+  position: absolute;
+  image-rendering: pixelated;
+  width: 2vw;
+}
+.catch-pokeball.hover {
+  animation: rotate 1.5s infinite;
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 .catch-pokemon {
   position: absolute;
@@ -933,7 +953,6 @@ text-align: left;
   background-color: rgba(255, 255, 255, 0.8);
   border-radius: 10px;
   font-weight: 600;
-  
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -1367,3 +1386,44 @@ left:5vw
   animation: floatheal 2s ease-in;
 }
 
+/*******BATTLEENDMODAL*******/
+.battle-end-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  z-index: 100;
+  width: 40vw;
+  height: 30vh;
+  background-color: rgba(255, 255, 255, 1);
+  left:50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  border: 3px solid black;
+  box-shadow: 6px 6px 6px black;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.battle-end-modal-title {
+
+}
+
+.battle-end-ok {
+  margin-top: 1vh;
+  width: 10vw;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  text-transform: capitalize;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.battle-end-ok:hover {
+  background-color: #f7c99da2;
+}
+.drop-list {
+  display: flex;
+  flex-direction: row;
+}

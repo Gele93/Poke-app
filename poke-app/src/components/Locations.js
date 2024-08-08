@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-function Locations({ setShopOrMedic, setCombatLog, combatLog, setCurrentLocation, isBattle, setIsBattle, setNar, capitalize, activePanel, setActivePanel, locations, setLocations, setIsGameWon, isGameWon }) {
-   
-    // const [loading, setLoading] = useState(true);
+function Locations({ setPossibleEncounters, setShopOrMedic, setCombatLog, combatLog, setCurrentLocation, isBattle, setIsBattle, setNar, capitalize, activePanel, setActivePanel, locations, setLocations, setIsGameWon, isGameWon }) {
+
+    const [isLocationChosen, setIsLocationChosen] = useState(false)
 
     useEffect(() => {
         setActivePanel("location")
@@ -28,41 +28,44 @@ function Locations({ setShopOrMedic, setCombatLog, combatLog, setCurrentLocation
         fetchLocations();
     }, [])
 
-    const handleLocationClick = (e) => {
+    const handleLocationClick = async (e) => {
         if (isBattle) return
         const target = e.target
 
-        const enemyChance = Math.floor(Math.random() * 100)
-        if (enemyChance < 20) {
-            const clickedLocation = target.textContent
-            let updatedLocations = [...locations]
-            updatedLocations.find(l => l.name === clickedLocation).visited = true
-            setNar(`There is no pokemon to find in ${capitalize(target.textContent)}`)
-            setLocations(updatedLocations)
+        const clickedLocation = target.textContent
+        let updatedLocations = [...locations]
+        updatedLocations.find(l => l.name === clickedLocation).visited = true
+        setLocations(updatedLocations)
 
-            if (locations.filter(l => l.visited).length === locations.length) {
-                setIsGameWon(true)
+        let updatedCombatLog = [...combatLog]
+
+        updatedCombatLog.push({
+            pokemon: "",
+            text: `${clickedLocation}`
+        })
+
+        let clickedLocationNr = e.target.id
+        
+        const fetchLocationInfo = async () => {
+            try {
+                const response = await fetch(`https://pokeapi.co/api/v2/location-area/${clickedLocationNr}/`)
+                if (!response.ok) {
+                    throw new Error ("fetching location info went wrong")
+                }
+                const locationInfo = await response.json()
+                const possibleEncounters = locationInfo.pokemon_encounters
+                setPossibleEncounters(possibleEncounters)           
+            } catch (error) {
+                console.error(error)
             }
-        } else {
-            const clickedLocation = target.textContent
-            setCurrentLocation(clickedLocation)
-            let updatedLocations = [...locations]
-            updatedLocations.find(l => l.name === clickedLocation).visited = true
-            setLocations(updatedLocations)
-            setActivePanel("mypokemons")
-            setShopOrMedic(0)
-
-            let updatedCombatLog = [...combatLog]
-
-            updatedCombatLog.push({
-                pokemon: "",
-                text: `${clickedLocation}`
-            })
-
-            setCombatLog(updatedCombatLog)
-
-            setIsBattle(true)
         }
+        await fetchLocationInfo()
+
+        setCombatLog(updatedCombatLog)
+        setCurrentLocation(clickedLocation)
+        setActivePanel("mypokemons")
+        setShopOrMedic(0)
+        setIsBattle(true)
     }
 
 
@@ -70,12 +73,16 @@ function Locations({ setShopOrMedic, setCombatLog, combatLog, setCurrentLocation
         <div className={`${activePanel === "location" ? "active" : null} location-container`}>
             <h1 className="location-title">Locations</h1>
             <ul className="locations">
-                {locations.map((location) => (
+                {locations.map((location, i) => (
                     <li key={location.name} className="location">
-                        <button disabled={location.visited} onClick={(e) => { handleLocationClick(e) }} className="location-button" type="button">{location.name}</button></li>
+                        <button id={i+1} disabled={location.visited} onClick={(e) => { handleLocationClick(e) }} className="location-button" type="button">{location.name}</button>
+                    </li>
                 ))}
             </ul>
+
         </div>
+
+
     )
 }
 
