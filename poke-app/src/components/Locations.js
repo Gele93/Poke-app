@@ -1,29 +1,32 @@
 import React, { useState, useEffect } from 'react';
 
-function Locations({ setCombatLog, combatLog, setCurrentLocation, isBattle, setIsBattle, setNar, capitalize, activePanel, setActivePanel, locations, setLocations, setIsGameWon, isGameWon }) {
-    const [loading, setLoading] = useState(true);
+function Locations({ setShopOrMedic, setCombatLog, combatLog, setCurrentLocation, isBattle, setIsBattle, setNar, capitalize, activePanel, setActivePanel, locations, setLocations, setIsGameWon, isGameWon }) {
+   
+    // const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setActivePanel("location")
         const fetchLocations = async () => {
-            const response = await fetch('https://pokeapi.co/api/v2/location/');
-            const data = await response.json();
+            try {
+                const response = await fetch('https://pokeapi.co/api/v2/location/');
+                if (!response.ok) {
+                    throw new Error("fetching locations went wrong")
+                }
+                const data = await response.json();
+                let allLocations = data.results
+                allLocations = allLocations.map(l => {
+                    return { ...l, visited: false }
+                })
 
-            let allLocations = data.results
-            allLocations = allLocations.map(l => {
-                return { ...l, visited: false }
-            })
+                setNar("Choose a location to travel!")
+                setLocations(allLocations);
 
+            } catch (error) {
 
-            setNar("Choose a location to travel!")
-            setLocations(allLocations);
+            }
         }
         fetchLocations();
     }, [])
-
-    if (loading) { }
-
-
 
     const handleLocationClick = (e) => {
         if (isBattle) return
@@ -47,6 +50,7 @@ function Locations({ setCombatLog, combatLog, setCurrentLocation, isBattle, setI
             updatedLocations.find(l => l.name === clickedLocation).visited = true
             setLocations(updatedLocations)
             setActivePanel("mypokemons")
+            setShopOrMedic(0)
 
             let updatedCombatLog = [...combatLog]
 

@@ -40,6 +40,7 @@ function ChooseStarter({ playerPokemons, setPlayerPokemons }) {
                     picFront: p.sprites.front_default,
                     picBack: p.sprites.back_default,
                     hp: p.stats[0].base_stat,
+                    remainingHp: p.stats[0].base_stat,
                     attack: p.stats[1].base_stat,
                     defense: p.stats[2].base_stat,
                     special: p.stats[3].base_stat,

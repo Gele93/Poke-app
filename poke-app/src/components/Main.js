@@ -23,6 +23,7 @@ function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, set
     const [combatLog, setCombatLog] = useState([])
     const [enemy, setEnemy] = useState()
     const [isPokedexModalOpen, setIsPokedexModalOpen] = useState(false)
+    const [shopOrMedic, setShopOrMedic] = useState(0)
 
     function capitalize(string) {
         let arr = string.split("-")
@@ -82,6 +83,8 @@ function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, set
                     boostDuration={boostDuration}
                     setBoostDuration={setBoostDuration} />
                 <Battle
+                    setShopOrMedic={setShopOrMedic}
+                    shopOrMedic={shopOrMedic}
                     isSound={isSound}
                     setBattleAudio={setBattleAudio}
                     setIdleAudio={setIdleAudio}
@@ -128,6 +131,7 @@ function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, set
                     setBoostDuration={setBoostDuration}
                 />
                 <Locations
+                    setShopOrMedic={setShopOrMedic}
                     combatLog={combatLog}
                     setCombatLog={setCombatLog}
                     setCurrentLocation={setCurrentLocation}

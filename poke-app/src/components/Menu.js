@@ -1,6 +1,8 @@
 import ChooseStarter from "./ChooseStarter"
 import { useEffect } from "react";
 
+//  "homepage": "https://gele93.github.io/Poke-app",
+
 function Menu({ themeAudio, setThemeAudio, setIsSound, isSound, battleAudio, idleAudio, setIsMenu, playerPokemons, setPlayerPokemons }) {
 
     useEffect(() => {
@@ -30,8 +32,8 @@ function Menu({ themeAudio, setThemeAudio, setIsSound, isSound, battleAudio, idl
     return (
         <div className="menu">
             <div className='background-container'>
-                <img className="background" src="./menubg.jpg" />
-                <img className="logo" src="./menulogo.png" />
+                <img className="background" src="/menubg.jpg" alt="" />
+                <img className="logo" src="./menulogo.png" alt="" />
             </div>
             <div className='description-container'>
                 <img className="oak-prof" src="./oakprof.png" />

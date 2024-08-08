@@ -288,9 +288,6 @@ opacity: 100%;
     transform: scale(1);
   }
 }
-
-
-
 .pokekodex {
   position: absolute;
   height: 9vh;
@@ -306,6 +303,32 @@ opacity: 100%;
   transform: scale(1.2);
   z-index: 2;
 }
+.hp-side {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  bottom: 9vh;
+  border: 1px solid black;
+  width: 5vw;
+  height: 0.2vh;
+}
+
+.hp-left-side {
+  width: 100%;
+  background-color: greenyellow;
+  height: 0.2vh;
+  transition: width 1s ease-in;
+
+}
+.hp-damage-side {
+  position: absolute;
+  right:0;
+  width: 0%;
+  background-color: red;
+  height: 0.2vh;
+  transition: width 1s ease-in;
+}
+
 
 /*******LOCATIONS*******/
 .location-container {
@@ -461,6 +484,36 @@ opacity: 100%;
     transform: translateY(-100%);
   }
 }
+
+.shop-medic-buttons {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  top:15vh;
+  height: 45vh;
+  width: 100%;
+}
+
+.shop-button-div, .medic-button-div {
+  border: none;
+  width: 30%;
+}
+.medic-button-div {
+  display: flex;
+  justify-content: end;
+}
+.shop-button-pic:hover, .medic-button-pic:hover {
+  cursor: pointer;
+  filter: drop-shadow(30px 20px 2px #00000080) grayscale(0%);
+}
+.shop-button-pic, .medic-button-pic {
+  width: 20vw;
+  transition: filter 0.5s;
+  image-rendering: pixelated;
+  filter: drop-shadow(30px 20px 15px #00000066) grayscale(40%);;
+}
+
 
 /*********PLAYER********/
 .current-player-poke-container {
@@ -1105,9 +1158,212 @@ left:5vw
   border: 2px solid black;
   box-shadow: 5px 5px 5px black;
 }
+.back-from-shop {
+  position: absolute;
+  bottom: 0;
+  left:50%;
+  transform: translateX(-50%);
+  width: 10vw;
+  bottom:1vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  text-transform: capitalize;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.back-from-shop:hover {
+  background-color: #f7c99da2;
+  }
+
 .oak-prof {
   position: absolute;
   bottom: 0;
   height: 15vh;
   right: 2vw;
 }
+
+/********MEDIC******/
+.medic-buttons {
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  justify-content: space-evenly;
+  height: 8vh;
+}
+.medic-move-buttons {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  justify-content: space-evenly;
+  height: 8vh;
+  width: 32vw;
+}
+
+.medic-heal, .medic-revieve, .medic-next, .medic-prev, .medic-back {
+  display: flex;
+  width: 6vw;
+  justify-content: center;
+  align-items: center;
+  height: 3vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  text-transform: capitalize;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.medic-next:hover, .medic-prev:hover {
+  background-color: #f7c99da2;
+}
+.medic-heal:hover {
+  background-color: rgb(85, 211, 85);
+}
+.medic-revieve:hover {
+  background-color: rgb(85, 140, 211);
+}
+.medic-back:hover {
+  background-color: rgb(211, 93, 85);
+}
+.joy {
+  position: absolute;
+  right: 0vw;
+  bottom: 35vh;
+  height: 30vh;
+}
+.medic-desk {
+  width: 100%;
+  height: 20vh;
+  background-color: hsl(0, 100%, 74%);
+  position: absolute;
+  bottom: 15vh;
+  box-shadow: 5px 10px 10px black;
+}
+.medic-nar {
+  position: absolute;
+  height: 10vh;
+  width: 30vw;
+  top:15vh;
+  right:18vw;
+  text-align: center;
+  align-content: center;
+  font-size: 2.5vh;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  border: 2px solid black;
+  box-shadow: 5px 5px 5px black;
+}
+
+.medic-poke-cont-1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  bottom: 20vh;
+  left: 8vw;
+  transform: scale(0.7);
+  opacity: 0.7;
+}
+.medic-poke-cont-2 {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  bottom: 20vh;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 1s;
+}
+.medic-poke-cont-3 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  bottom: 20vh;
+  right: 8vw;
+  transform: scale(0.7);
+  opacity: 0.7;
+}
+.medic-poke-img {
+  image-rendering: pixelated;
+  position: absolute;
+  top:-18vh;
+  height: 30vh;
+}
+.medic-hp{
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  bottom: 11vh;
+  border: 1px solid black;
+  width: 8vw;
+  height: 1vh;
+}
+.medic-hp-left-1, .medic-hp-left-2, .medic-hp-left-3 {
+  width: 100%;
+  background-color: greenyellow;
+  height: 1vh;
+}
+.medic-hp-damage-1, .medic-hp-damage-2, .medic-hp-damage-3 {
+  position: absolute;
+  right:0;
+  width: 0%;
+  background-color: red;
+  height: 1vh;
+}
+.medic-hp-percent {
+  position: absolute;
+  bottom: 1vh;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/******HEALMODAL******/
+.heal-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: absolute;
+  z-index: 100;
+  width: 20vw;
+  height: 20vh;
+  background-color: rgba(255, 255, 255, 1);
+  left:50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  border: 3px solid black;
+  box-shadow: 6px 6px 6px black;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.heal-modal-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.medic-float-heal {
+  z-index: 100;
+  position: absolute;
+  bottom: 12vh;
+  position: absolute;
+  font-size: 5vh;
+  color: green;
+  font-weight: 900;
+  opacity: 0%;
+  right:35%;
+  animation: floatheal 2s ease-in;
+}
+

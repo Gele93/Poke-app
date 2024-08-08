@@ -4,8 +4,9 @@ import Combatmodal from './Combatmodal'
 import Pokedexmodal from './Pokedexmodal'
 import Enemydexmodal from './Enemydex'
 import Shop from "./Shop"
+import Medic from './Medic'
 
-function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, setIsPokedexModalOpen, isPokedexModalOpen, enemy, setEnemy, setCombatLog, combatLog, isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
+function Battle({ shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, setIsPokedexModalOpen, isPokedexModalOpen, enemy, setEnemy, setCombatLog, combatLog, isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
 
     const [enemyDmg, setEnemyDmg] = useState(0)
     const [enemyCurHp, setEnemyCurHp] = useState(0)
@@ -28,7 +29,6 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
     const [gold, setGold] = useState(0)
     const [isFirstFightDone, setIsFirstFightDone] = useState(false)
     const [isMiss, setIsMiss] = useState(false)
-
 
     useEffect(() => {
         const idle = new Audio('./idle.mp3');
@@ -70,9 +70,19 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
         setCombatLog(updatedCombatLog)
     }
 
+    const drawPlayerHpBar = (currentHp) => {
+        let greenPercent = (currentHp / choosenPokemon.hp) * 100
+        if (greenPercent < 0) greenPercent = 0
+        const redPercent = 100 - greenPercent
+        document.querySelector(".hp-left").style.width = `${greenPercent}%`
+        document.querySelector(".hp-damage").style.width = `${redPercent}%`
+    }
+
     useEffect(() => {
-        if (choosenPokemon) {
-            setPlayerCurHp(choosenPokemon.hp)
+        if (choosenPokemon && isPlayerChoosen) {
+            //   setPlayerCurHp(choosenPokemon.hp) #START FROM MAX HP
+            setPlayerCurHp(choosenPokemon.remainingHp)
+            drawPlayerHpBar(choosenPokemon.remainingHp)
         }
     }, [isPlayerChoosen])
 
@@ -101,6 +111,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                             picFront: data.sprites.front_default,
                             picBack: data.sprites.back_default,
                             hp: data.stats[0].base_stat,
+                            remainingHp: data.stats[0].base_stat,
                             attack: data.stats[1].base_stat,
                             defense: data.stats[2].base_stat,
                             special: data.stats[3].base_stat,
@@ -114,11 +125,6 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                             dmgRel: damageRelations["damage_relations"]
                         }
 
-                        console.log(pokeData)
-
-
-
-
                         setEnemy(pokeData);
                         setEnemyCurHp(pokeData.hp)
                         setNar(`A wild ${pokeData.name} appeared!
@@ -130,11 +136,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
                 const randomNumber = Math.ceil(Math.random() * 1025)
                 await fetchRandomPokemon(randomNumber)
-                /*
-                const timeoutId = setTimeout(() => {
-                    setNar("Choose your fighter!")
-                }, 3000)
-*/
+
             }
             enemyAppear()
         }
@@ -179,11 +181,11 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             }
 
             /*
-            if (boostDuration > 0) {
-                enemyCalculatedDmg = Math.round(enemyCalculatedDmg * boostModif)
-                updatedBoostDuration = boostDuration - 1
-            }
-*/
+                        if (boostDuration > 0) {
+                            enemyCalculatedDmg = Math.round(enemyCalculatedDmg * boostModif)
+                            updatedBoostDuration = boostDuration - 1
+                        }
+            */
             //   enemyCalculatedDmg = applyDmgModifier(enemyCalculatedDmg, enemy.type, choosenPokemon.dmgRel)
 
             const updatedCurHp = enemyCurHp - enemyCalculatedDmg
@@ -271,6 +273,19 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                     nar += " You gained 1 Boost Potion!"
                 }
 
+                if (playerCurHp > 0) {
+                    let updatedPlayerPokemons = [...playerPokemons]
+                    updatedPlayerPokemons = updatedPlayerPokemons.map(p => {
+                        if (p.name === choosenPokemon.name) {
+                            p.remainingHp = playerCurHp
+                            return { ...p, }
+                        } else {
+                            return { ...p }
+                        }
+                    })
+                    setPlayerPokemons(updatedPlayerPokemons)
+
+                }
             }
 
             if (specialCd > 0) {
@@ -315,7 +330,6 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
 
             const updatedCurHp = playerCurHp - curPlayerDmg
 
-
             setIsFloatDmg(true)
             if (curPlayerDmg > 0) {
                 setPlayerFloatText(curPlayerDmg)
@@ -327,12 +341,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                 setIsPlayerFloatText(false)
             }, 2000)
 
-
-            let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
-            if (greenPercent < 0) greenPercent = 0
-            const redPercent = 100 - greenPercent
-            document.querySelector(".hp-left").style.width = `${greenPercent}%`
-            document.querySelector(".hp-damage").style.width = `${redPercent}%`
+            drawPlayerHpBar(updatedCurHp)
 
             setPlayerCurHp(updatedCurHp)
         }
@@ -445,6 +454,8 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             nar = `Precision hit ${dmg} dmg`
         }
 
+        dmg = dmg * 10000
+
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
         setNar(nar)
@@ -518,17 +529,12 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
         if (updatedPlayerCurHp > maxHp) updatedPlayerCurHp = maxHp
         let dmg = 0
         let nar = `${choosenPokemon.name} is healed for ${updatedPlayerCurHp - playerCurHp}.`
-
         const updatedCurHp = updatedPlayerCurHp
-        let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
-        if (greenPercent < 0) greenPercent = 0
-        const redPercent = 100 - greenPercent
-        document.querySelector(".hp-left").style.width = `${greenPercent}%`
-        document.querySelector(".hp-damage").style.width = `${redPercent}%`
+
+        drawPlayerHpBar(updatedCurHp)
 
         setEnemyDmg(dmg)
         setEnemyFloatText("")
-
         setIsFloatDmg(false)
         setPlayerFloatText(updatedPlayerCurHp - playerCurHp)
         setIsPlayerFloatText(true)
@@ -564,13 +570,9 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
             setIsPlayerFloatText(false)
         }, 2000)
 
-
         const updatedCurHp = updatedPlayerCurHp
-        let greenPercent = (updatedCurHp / choosenPokemon.hp) * 100
-        if (greenPercent < 0) greenPercent = 0
-        const redPercent = 100 - greenPercent
-        document.querySelector(".hp-left").style.width = `${greenPercent}%`
-        document.querySelector(".hp-damage").style.width = `${redPercent}%`
+
+        drawPlayerHpBar(updatedCurHp)
 
         let updatedHpPotAmount = hpPotAmount - 1
 
@@ -610,6 +612,7 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                 let updatedPlayerPokemons = [...playerPokemons]
                 const chosenName = choosenPokemon.name
                 updatedPlayerPokemons.find(p => p.name === chosenName).dead = true
+                updatedPlayerPokemons.find(p => p.name === chosenName).remainingHp = 0
 
                 if (updatedPlayerPokemons.filter(p => p.dead).length === updatedPlayerPokemons.length) {
                     setIsGameOver(true)
@@ -735,6 +738,13 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
         setIsAbilityModalOpen(!isAbilityModalOpen)
     }
 
+    const handleShopClick = () => {
+        setShopOrMedic("Shop")
+    }
+
+    const handleMedicClick = () => {
+        setShopOrMedic("Medic")
+    }
 
     return (
         <div className={`${activePanel === "battle" ? "active" : null} battle-container`}>
@@ -841,7 +851,27 @@ function Battle({ isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio,
                                     )}
                                 </>
                             ) : (
-                                <Shop isFirstFightDone={isFirstFightDone} gold={gold} setGold={setGold} setHpPotAmount={setHpPotAmount} setBoostPotAmount={setBoostPotAmount} />
+                                <>
+                                    {shopOrMedic === 0 ? (
+                                        <div className='shop-medic-buttons'>
+                                            <div className='shop-button-div'>
+                                                <img onClick={handleShopClick} className='shop-button-pic' src="/shop.png" />
+                                            </div>
+                                            <div className='medic-button-div'>
+                                                <img onClick={handleMedicClick} className="medic-button-pic" src="/medic.png" />
+
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {shopOrMedic === "Shop" ? (
+                                                <Shop setShopOrMedic={setShopOrMedic} isFirstFightDone={isFirstFightDone} gold={gold} setGold={setGold} setHpPotAmount={setHpPotAmount} setBoostPotAmount={setBoostPotAmount} />
+                                            ) : (
+                                                <Medic setShopOrMedic={setShopOrMedic} gold={gold} setGold={setGold} playerPokemons={playerPokemons} setPlayerPokemons={setPlayerPokemons} />
+                                            )}
+                                        </>
+                                    )}
+                                </>
                             )}
                         </>
                     )}

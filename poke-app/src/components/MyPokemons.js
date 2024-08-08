@@ -1,4 +1,37 @@
+import { useEffect } from "react"
+
 function MyPokemons({ isPokedexModalOpen, setIsPokedexModalOpen, enemy, setBoostDuration, setIsMendDisabled, setMendCd, setDefenseDuration, setIsSpecialDisabled, setSpecialCd, playerPokemons, setPlayerPokemons, isBattle, isPlayerChoosen, setIsPlayerChoosen, setChoosenPokemon, setNar, activePanel, setActivePanel }) {
+
+    const drawPlayerHpBarSide = (currentHp, maxHp, pokeName) => {
+        let greenPercent = (currentHp / maxHp) * 100
+        if (greenPercent < 0) greenPercent = 0
+        const redPercent = 100 - greenPercent
+        document.querySelector(`#${pokeName}hp-left`).style.width = `${greenPercent}%`
+        document.querySelector(`#${pokeName}hp-damage`).style.width = `${redPercent}%`
+    }
+
+    useEffect(() => {
+        if (!isPlayerChoosen) {
+
+            let updatedPlayerPokemons = [...playerPokemons]
+            updatedPlayerPokemons = updatedPlayerPokemons.map(p => {
+                if (p.remainingHp !== 0) {
+                    p.remainingHp += Math.round(p.hp * 0.1)
+                }
+                if (p.remainingHp > p.hp) {
+                    p.remainingHp = p.hp
+                }
+                return {...p}
+            })
+
+            updatedPlayerPokemons.map(p => {
+                drawPlayerHpBarSide(p.remainingHp, p.hp, p.name)
+            })
+
+            setPlayerPokemons(updatedPlayerPokemons)
+
+        }
+    }, [isPlayerChoosen])
 
     const typeToColor = {
         normal: `rgba(168, 168, 120, 0.5)`,
@@ -58,6 +91,10 @@ function MyPokemons({ isPokedexModalOpen, setIsPokedexModalOpen, enemy, setBoost
                     <div key={pokemon.name} className="player-poke-wraper">
                         <h2 className="player-poke-name">{pokemon.name}</h2>
                         <img pokename={pokemon.name} onClick={(e) => handleMyPokemonClick(e)} className={`${pokemon.dead ? "dead" : null} player-poke-img`} src={pokemon.picFront} />
+                        <div id={`${pokemon.name}hp`} className="hp-side">
+                            <div id={`${pokemon.name}hp-left`} className="hp-left-side"></div>
+                            <div id={`${pokemon.name}hp-damage`} className="hp-damage-side"></div>
+                        </div>
                     </div>
                 ))}
             </div>
