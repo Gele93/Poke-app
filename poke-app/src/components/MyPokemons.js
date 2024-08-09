@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-function MyPokemons({ isPokedexModalOpen, setIsPokedexModalOpen, enemy, setBoostDuration, setIsMendDisabled, setMendCd, setDefenseDuration, setIsSpecialDisabled, setSpecialCd, playerPokemons, setPlayerPokemons, isBattle, isPlayerChoosen, setIsPlayerChoosen, setChoosenPokemon, setNar, activePanel, setActivePanel }) {
+function MyPokemons({ balls, isPokedexModalOpen, setIsPokedexModalOpen, enemy, setBoostDuration, setIsMendDisabled, setMendCd, setDefenseDuration, setIsSpecialDisabled, setSpecialCd, playerPokemons, setPlayerPokemons, isBattle, isPlayerChoosen, setIsPlayerChoosen, setChoosenPokemon, setNar, activePanel, setActivePanel }) {
 
     const drawPlayerHpBarSide = (currentHp, maxHp, pokeName) => {
         let greenPercent = (currentHp / maxHp) * 100
@@ -21,7 +21,7 @@ function MyPokemons({ isPokedexModalOpen, setIsPokedexModalOpen, enemy, setBoost
                 if (p.remainingHp > p.hp) {
                     p.remainingHp = p.hp
                 }
-                return {...p}
+                return { ...p }
             })
 
             updatedPlayerPokemons.map(p => {
@@ -87,6 +87,35 @@ function MyPokemons({ isPokedexModalOpen, setIsPokedexModalOpen, enemy, setBoost
         <div className={`${activePanel === "mypokemons" ? "active" : null} player-poke-container`}>
             <h1 className="player-poke-title">My pokemons</h1>
             <div className="player-poke-list">
+                {balls.map((b, i) => (
+                    playerPokemons[i] ? (
+                        <div key={playerPokemons[i].name} className="player-poke-wraper">
+                            <h2 className="player-poke-name">{playerPokemons[i].name}</h2>
+                            <img pokename={playerPokemons[i].name} onClick={(e) => handleMyPokemonClick(e)} className={`${playerPokemons[i].dead ? "dead" : null} player-poke-img`} src={playerPokemons[i].picFront} />
+                            <div id={`${playerPokemons[i].name}hp`} className="hp-side">
+                                <div id={`${playerPokemons[i].name}hp-left`} className="hp-left-side"></div>
+                                <div id={`${playerPokemons[i].name}hp-damage`} className="hp-damage-side"></div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div key={i}>
+                            <img src='/pokeball.png' className="pokeball" />
+                        </div>
+                    )
+                ))}
+            </div>
+            <img onClick={() => setIsPokedexModalOpen(!isPokedexModalOpen)} className="pokekodex" src="pokedex.gif" />
+        </div>
+    )
+}
+
+export default MyPokemons
+
+
+/*
+        <div className={`${activePanel === "mypokemons" ? "active" : null} player-poke-container`}>
+            <h1 className="player-poke-title">My pokemons</h1>
+            <div className="player-poke-list">
                 {playerPokemons.map((pokemon) => (
                     <div key={pokemon.name} className="player-poke-wraper">
                         <h2 className="player-poke-name">{pokemon.name}</h2>
@@ -100,7 +129,4 @@ function MyPokemons({ isPokedexModalOpen, setIsPokedexModalOpen, enemy, setBoost
             </div>
             <img onClick={() => setIsPokedexModalOpen(!isPokedexModalOpen)} className="pokekodex" src="pokedex.gif" />
         </div>
-    )
-}
-
-export default MyPokemons
+*/

@@ -25,6 +25,7 @@ function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, set
     const [isPokedexModalOpen, setIsPokedexModalOpen] = useState(false)
     const [shopOrMedic, setShopOrMedic] = useState(0)
     const [possibleEncounters, setPossibleEncounters] = useState([])
+    const [balls, setBalls] = useState([1,1,1,1,1])
 
     function capitalize(string) {
         let arr = string.split("-")
@@ -59,6 +60,7 @@ function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, set
             </div>
             <div className="panel-container">
                 <MyPokemons
+                    balls={balls}
                     isPokedexModalOpen={isPokedexModalOpen}
                     setIsPokedexModalOpen={setIsPokedexModalOpen}
                     enemy={enemy}
@@ -84,6 +86,8 @@ function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, set
                     boostDuration={boostDuration}
                     setBoostDuration={setBoostDuration} />
                 <Battle
+                    balls={balls}
+                    setBalls={setBalls}
                     possibleEncounters={possibleEncounters}
                     setShopOrMedic={setShopOrMedic}
                     shopOrMedic={shopOrMedic}

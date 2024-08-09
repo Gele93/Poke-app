@@ -10,6 +10,7 @@ function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemon
     const [calculatedHealPrice, setCalculatedHealPrice] = useState("")
     const [isHealFloat, setIsHealFloat] = useState(false)
     const [healFloat, setHealFloat] = useState("")
+    const [isReleaseModal, setIsReleaseModal] = useState(false)
 
     const drawPlayerHpBarSide = (currentHp, maxHp, pokeName) => {
         let greenPercent = (currentHp / maxHp) * 100
@@ -112,11 +113,8 @@ function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemon
     }
 
     const handleBackClick = () => {
-        /*
-        let test = [...playerPokemons]
-        test[medicIndex].remainingHp = 1
-        setPlayerPokemons(test)
-        */
+        setIsReleaseModal(false)
+        setIsRevieveModal(false)
         setIsHealModal(false)
     }
 
@@ -173,8 +171,28 @@ function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemon
         setIsRevieveModal(false)
     }
 
+    const handleReleaseClick = () => {
+        setIsReleaseModal(true)
+    }
+
+
     const handleBackToMenuClick = () => {
         setShopOrMedic(0)
+    }
+    const handleConfirmReleaseClick = () => {
+        let nar = ""
+        if (medicIndex <= 2) {
+            console.log(medicIndex)
+            nar = `You can not release your starter pokemons`
+        } else {
+            let updatedPlayerPokemons = [...playerPokemons]
+            nar = `${playerPokemons[medicIndex].name} is set to be free..`
+            updatedPlayerPokemons.splice(medicIndex, 1)
+            setPlayerPokemons(updatedPlayerPokemons)
+        }
+        setIsReleaseModal(false)
+        setMedicNar(nar)
+
     }
     return (
         <div className='medic'>
@@ -212,6 +230,7 @@ function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemon
             <div className='medic-buttons'>
                 <button disabled={playerPokemons[medicIndex].remainingHp === 0} onClick={handleHealClick} className="medic-heal" type='button'>Heal</button>
                 <button onClick={handleRevieveClick} disabled={!playerPokemons[medicIndex].dead} className="medic-revieve" type='button'>Revieve</button>
+                <button onClick={handleReleaseClick} className="medic-release" type='button'>Release</button>
             </div>
             <div className='medic-move-buttons'>
                 <button onClick={handlePrevClick} className="medic-next" type='button'>Previous</button>
@@ -257,6 +276,22 @@ function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemon
                         {Math.round(playerPokemons[medicIndex].hp / 2) < gold &&
                             <button disabled={Math.round(playerPokemons[medicIndex].hp / 2) > gold} onClick={handleConfirmRevieveClick} className='medic-heal confirm-heal' type='button'>Revieve</button>
                         }
+                    </div>
+                </div>
+            ) : (
+                null
+            )}
+            {isReleaseModal ? (
+                <div className='heal-modal'>
+
+                    <div className='heal-modal-title'>
+                        Do you want to release {playerPokemons[medicIndex].name}?
+                        <div className='release-comment'>this can not be reversed</div>
+                    </div>
+                    <div className='heal-modal-button-container'>
+                        <button onClick={handleBackClick} className='medic-back confirm-heal' type='button'>Back</button>
+                        <button onClick={handleConfirmReleaseClick} className='medic-heal confirm-heal' type='button'>Release</button>
+
                     </div>
                 </div>
             ) : (

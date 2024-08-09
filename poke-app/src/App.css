@@ -328,6 +328,11 @@ opacity: 100%;
   height: 0.2vh;
   transition: width 1s ease-in;
 }
+.pokeball {
+  width: 4vw;
+  transition: transform 0.3s;
+  animation: catch 2s ease-in;
+}
 
 
 /*******LOCATIONS*******/
@@ -1111,7 +1116,7 @@ left:5vw
   position: absolute;
   display: flex;
   flex-direction: row;
-  left:60%;
+  left:55%;
   transform: translateX(-50%);
   bottom:20vh;
   align-content: center;
@@ -1125,6 +1130,16 @@ left:5vw
 }
 .shop-item-pic {
   width: 12vw;
+  transition: transform 0.5s;
+  transition: transform 0.5s, filter 0.5s;
+}
+.shop-item-pic-ball {
+  width: 6vw;
+  transition: transform 0.5s, filter 0.5s;
+}
+.shop-item-pic:hover, .shop-item-pic-ball:hover {
+  transform: translateY(-15%);
+  filter: drop-shadow(10px 10px 1px #00000080)
 }
 .shop-item-price {
   position: absolute;
@@ -1136,6 +1151,7 @@ left:5vw
 }
 .shop-buy {
   position: absolute;
+  display: flex;
     transform: translateX(80%);
     width: 6vw;
     height: 3vh;
@@ -1145,6 +1161,8 @@ left:5vw
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s;
+    align-items:center;
+    justify-content: center;
 }
 .shop-buy:hover {
   background-color: #f7c99da2;
@@ -1208,7 +1226,7 @@ left:5vw
   display: flex;
   flex-direction: column;
   position: absolute;
-  bottom: 5vh;
+  bottom: 6vh;
   left: 50%;
   transform: translateX(-50%);
   justify-content: space-evenly;
@@ -1226,8 +1244,11 @@ left:5vw
   height: 8vh;
   width: 32vw;
 }
-
-.medic-heal, .medic-revieve, .medic-next, .medic-prev, .medic-back {
+.medic-revieve {
+  margin-top: 0.5vh;
+  margin-bottom: 0.5vh;
+}
+.medic-heal, .medic-revieve, .medic-next, .medic-prev, .medic-back, .medic-release {
   display: flex;
   width: 6vw;
   justify-content: center;
@@ -1250,6 +1271,9 @@ left:5vw
   background-color: rgb(85, 140, 211);
 }
 .medic-back:hover {
+  background-color: rgb(211, 93, 85);
+}
+.medic-release:hover {
   background-color: rgb(211, 93, 85);
 }
 .joy {
@@ -1385,7 +1409,12 @@ left:5vw
   right:35%;
   animation: floatheal 2s ease-in;
 }
-
+.release-comment {
+  text-align: center;
+  font-size: 1.8vh;
+  font-weight: 200;
+  font-style: italic;
+}
 /*******BATTLEENDMODAL*******/
 .battle-end-modal {
   display: flex;

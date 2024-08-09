@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 
-function Shop({ setShopOrMedic, setHpPotAmount, setBoostPotAmount, isFirstFightDone, gold, setGold }) {
-
+function Shop({ balls, setBalls, setShopOrMedic, setHpPotAmount, setBoostPotAmount, isFirstFightDone, gold, setGold }) {
 
     const [mercNar, setMercNar] = useState("")
 
@@ -20,6 +19,7 @@ function Shop({ setShopOrMedic, setHpPotAmount, setBoostPotAmount, isFirstFightD
 
     const hpPotPrice = 10
     const boostPotPrice = 12
+    const pokeballPrice = 30
 
 
     const handleBuyHpPot = () => {
@@ -36,15 +36,46 @@ function Shop({ setShopOrMedic, setHpPotAmount, setBoostPotAmount, isFirstFightD
         if (gold >= boostPotPrice) {
             setMercNar(`This will make your pokemon pumped UP!!`)
             setGold(prev => prev - boostPotPrice)
-            setHpPotAmount(prev => prev + 1)
+            setBoostPotAmount(prev => prev + 1)
         } else {
             setMercNar("No money - no dance")
+        }
+    }
+    const handleBuyPokeBall = () => {
+        if (gold >= pokeballPrice) {
+            let updatedBalls = [...balls]
+            updatedBalls.push(1)
+            setMercNar(`Catch all of them! But at least one more!`)
+            setGold(prev => prev - pokeballPrice)
+            setBalls(updatedBalls)
+        } else {
+            setMercNar("Those are expensive stuff!")
         }
     }
 
     const handleBackClick = () => {
         setShopOrMedic(0)
     }
+
+    const handleHpPotHover = () => {
+        setMercNar(`This will Heal your pokemon 15 HP anytime in fight.`)
+    }
+    const handleHpPotHoverOff = () => {
+        setMercNar(`Look around my friend!`)
+    }
+    const handleBoostPotHover = () => {
+        setMercNar(`Your pokemon will cause 1.5x damage for 3 turns.`)
+    }
+    const handleBoostPotHoverOff = () => {
+        setMercNar(`What can I do for you?`)
+    }
+    const handlePokeballHover = () => {
+        setMercNar(`You will need these to catch more pokemons.`)
+    }
+    const handlePokeballHoverOff = () => {
+        setMercNar(`Wanna buy some?`)
+    }
+
 
     return (
         <div className='shop'>
@@ -55,13 +86,18 @@ function Shop({ setShopOrMedic, setHpPotAmount, setBoostPotAmount, isFirstFightD
             <div className='shop-items'>
                 <div className='shop-item'>
                     <div className='shop-item-price'>{hpPotPrice}🪙</div>
-                    <img className='shop-item-pic' src='./hppot.png' />
+                    <img onMouseOver={handleHpPotHover} onMouseOut={handleHpPotHoverOff} className='shop-item-pic' src='./hppot.png' />
                     <button onClick={handleBuyHpPot} className='shop-buy'>Buy</button>
                 </div>
                 <div className='shop-item'>
                     <div className='shop-item-price'>{boostPotPrice}🪙</div>
-                    <img className='shop-item-pic' src='./boostpot.png' />
+                    <img onMouseOver={handleBoostPotHover} onMouseOut={handleBoostPotHoverOff} className='shop-item-pic' src='./boostpot.png' />
                     <button onClick={handleBuyBoostPot} className='shop-buy'>Buy</button>
+                </div>
+                <div className='shop-item'>
+                    <div className='shop-item-price'>{pokeballPrice}🪙</div>
+                    <img onMouseOver={handlePokeballHover} onMouseOut={handlePokeballHoverOff} className='shop-item-pic-ball' src='./pokeball.png' />
+                    <button onClick={handleBuyPokeBall} className='shop-buy'>Buy</button>
                 </div>
             </div>
             <button onClick={handleBackClick} className='back-from-shop' type='button'>Back</button>
