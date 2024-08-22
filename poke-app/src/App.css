@@ -1517,39 +1517,22 @@ left:5vw
   width: 3.5vw;
   border: 0.3vw solid rgb(18, 230, 28);
 }
-/*
-.ruin1 {
-  background-image: url("../public/ruin22.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  color: rgba(255, 255, 255, 0);
+.guardian {
+  transform: scale(1);
+  border: 0.3vw solid rgb(221, 71, 25);
+  animation: 3s pulsateGuardian infinite;
 }
-.ruin2 {
-  background-image: url("../public/ruin2.gif");
-  background-size: contain;
-  background-repeat: no-repeat;
-  color: rgba(255, 255, 255, 0);
+@keyframes pulsateGuardian {
+  0% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(0.9);
+  }
 }
-.ruin3 {
-  background-image: url("../public/ruin22.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  color: rgba(255, 255, 255, 0);
-}
-.ruin4 {
-  background-image: url("../public/ruin22.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  color: rgba(255, 255, 255, 0);
-}
-.ruin5 {
-  background-image: url("../public/ruin22.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  color: rgba(255, 255, 255, 0);
-}
-  */
 
 .medic {
   background-image: url("../public/medic.png");

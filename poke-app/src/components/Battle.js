@@ -47,7 +47,12 @@ function Battle({ setCurrentLocation, setPossibleEncounters, setBalls, balls, po
     const [locationsWithPositions, setLocationsWithPositions] = useState([])
     const [visibleMap, setVisibleMap] = useState([])
     const [visibleSliceOfAllMap, setVisibleSliceOfAllMap] = useState([[7, 14], [18, 36]])
-
+    const [guardians, setGuardians] = useState({})
+    const [isGuardianEncounter, setIsGuardianEncounter] = useState(false)
+    const [currentGuardianEncounter, setCurrentGuardianEncounter] = useState({})
+    const [currentGuardianLevel, setCurrentGuardianLevel] = useState(0)
+    const [guardianAllLevels, setGuardianAllLevels] = useState([])
+    const [defeatedGuardians, setDefeatedGuardians] = useState(0)
 
     useEffect(() => {
         const idle = new Audio('./idle.mp3');
@@ -107,59 +112,83 @@ function Battle({ setCurrentLocation, setPossibleEncounters, setBalls, balls, po
 
     useEffect(() => {
         if (isBattle) {
-            const enemyAppear = async () => {
-                const fetchData = async (url) => {
-                    try {
-                        const response = await fetch(url)
-                        if (!response.ok) {
-                            throw new Error("Fetching run into error")
-                        }
-                        const data = await response.json()
-                        return data
 
-                    } catch (error) {
-                        console.error(error)
+            const fetchData = async (url) => {
+                try {
+                    const response = await fetch(url)
+                    if (!response.ok) {
+                        throw new Error("Fetching run into error")
                     }
+                    const data = await response.json()
+                    return data
+
+                } catch (error) {
+                    console.error(error)
                 }
-                const fetchPokemonFromLocation = async (randomEncounterUrl) => {
-                    try {
-                        const response = await fetch(randomEncounterUrl);
-                        const data = await response.json();
-                        let pokeData = {
-                            name: data.species.name,
-                            picFront: data.sprites.front_default,
-                            picBack: data.sprites.back_default,
-                            hp: data.stats[0].base_stat,
-                            remainingHp: data.stats[0].base_stat,
-                            attack: data.stats[1].base_stat,
-                            defense: data.stats[2].base_stat,
-                            special: data.stats[3].base_stat,
-                            type: data.types[0].type.name,
-                            typeUrl: data.types[0].type.url
-                        }
+            }
 
-                        const damageRelations = await fetchData(pokeData.typeUrl)
-                        pokeData = {
-                            ...pokeData,
-                            dmgRel: damageRelations["damage_relations"]
-                        }
+            const fetchPokemonFromLocation = async (randomEncounterUrl, isGuardian = false) => {
+                try {
+                    console.log(randomEncounterUrl)
+                    const response = await fetch(randomEncounterUrl);
+                    const data = await response.json();
+                    let pokeData = {
+                        name: data.species.name,
+                        picFront: data.sprites.front_default,
+                        picBack: data.sprites.back_default,
+                        hp: data.stats[0].base_stat,
+                        remainingHp: data.stats[0].base_stat,
+                        attack: data.stats[1].base_stat,
+                        defense: data.stats[2].base_stat,
+                        special: data.stats[3].base_stat,
+                        type: data.types[0].type.name,
+                        typeUrl: data.types[0].type.url
+                    }
 
+                    const damageRelations = await fetchData(pokeData.typeUrl)
+                    pokeData = {
+                        ...pokeData,
+                        dmgRel: damageRelations["damage_relations"]
+                    }
+
+                    if (!isGuardian) {
                         setEnemy(pokeData);
                         setEnemyCurHp(pokeData.hp)
                         setNar(`A wild ${pokeData.name} appeared!
                             Choose your pokemon!`)
-                    } catch (error) {
-                        console.error('Error fetching Pokémon:', error);
-                    };
-                }
-
-                const randomEncounterNr = Math.floor(Math.random() * possibleEncounters.length)
-                const randomEncounterUrl = possibleEncounters[randomEncounterNr].pokemon.url
-
-                await fetchPokemonFromLocation(randomEncounterUrl)
-
+                    } else {
+                        return pokeData
+                    }
+                } catch (error) {
+                    console.error('Error fetching Pokémon:', error);
+                };
             }
-            enemyAppear()
+
+            if (!isGuardianEncounter) {
+                const enemyAppear = async () => {
+                    const randomEncounterNr = Math.floor(Math.random() * possibleEncounters.length)
+                    const randomEncounterUrl = possibleEncounters[randomEncounterNr].pokemon.url
+                    await fetchPokemonFromLocation(randomEncounterUrl)
+                }
+                enemyAppear()
+            } else if (isGuardianEncounter) {
+                const guardianAppear = async () => {
+                    let updatedGuardianAllLevels = []
+                    updatedGuardianAllLevels.push(await fetchPokemonFromLocation(currentGuardianEncounter.guardianUrls[0], isGuardianEncounter))
+                    updatedGuardianAllLevels.push(await fetchPokemonFromLocation(currentGuardianEncounter.guardianUrls[1], isGuardianEncounter))
+                    updatedGuardianAllLevels.push(await fetchPokemonFromLocation(currentGuardianEncounter.guardianUrls[2], isGuardianEncounter))
+
+                    console.log(updatedGuardianAllLevels)
+                    const pokeData = updatedGuardianAllLevels[0]
+                    setGuardianAllLevels(updatedGuardianAllLevels)
+                    setCurrentGuardianLevel(0)
+                    setEnemy(pokeData);
+                    setEnemyCurHp(pokeData.hp)
+                    setNar(`A wild ${pokeData.name} appeared!
+                        Choose your pokemon!`)
+                }
+                guardianAppear()
+            }
         }
     }, [isBattle])
 
@@ -286,6 +315,54 @@ function Battle({ setCurrentLocation, setPossibleEncounters, setBalls, balls, po
             let updatedBalls = [...balls]
             if (updatedCurHp <= 0) {
                 nar = `${enemy.name} has been defeated`
+
+                if (isGuardianEncounter && currentGuardianLevel < 2) {
+                    let updatedCurGuardianLevel = currentGuardianLevel
+                    updatedCurGuardianLevel++
+                    const updatedEnemy = guardianAllLevels[updatedCurGuardianLevel]
+                    const updatedEnemyHp = guardianAllLevels[updatedCurGuardianLevel].hp
+                    setEnemy(updatedEnemy)
+                    setCurrentGuardianLevel(updatedCurGuardianLevel)
+                    setEnemyCurHp(updatedEnemyHp)
+                    let greenPercent = (updatedEnemyHp / updatedEnemy.hp) * 100
+                    if (greenPercent < 0) greenPercent = 0
+                    const redPercent = 100 - greenPercent
+                    document.querySelector(".enemy-hp-left").style.width = `${greenPercent}%`
+                    document.querySelector(".enemy-hp-damage").style.width = `${redPercent}%`
+
+                    if (specialCd > 0) {
+                        const updatedSpecialCd = specialCd - 1
+                        setSpecialCd(updatedSpecialCd)
+                        if (updatedSpecialCd === 0) {
+                            setIsSpecialDisabled(false)
+                        }
+                    }
+                    if (mendCd > 0) {
+                        const updatedMendCd = mendCd - 1
+                        setMendCd(updatedMendCd)
+                        if (updatedMendCd === 0) {
+                            setIsMendDisabled(false)
+                        }
+                    }
+
+                    updateCombatLog(enemy.name, nar)
+                    setIsPlayerTurn(true)
+                    setDefenseDuration(updatedDuration)
+                    setBoostDuration(updatedBoostDuration)
+                    setNar(nar)
+                    setIsAttackDisabled(false)
+                    return
+
+                } else if (isGuardianEncounter && currentGuardianLevel === 2) {
+                    let updatedDefeatedGuardians = defeatedGuardians
+                    updatedDefeatedGuardians++
+                    if (updatedDefeatedGuardians === 4) {
+                        setIsGameOver(true)
+                    }
+                    setDefeatedGuardians(updatedDefeatedGuardians)
+
+                    
+                }
 
                 const hpDropChance = Math.floor(Math.random() * 100)
                 const boostDropChance = Math.floor(Math.random() * 100)
@@ -723,6 +800,10 @@ function Battle({ setCurrentLocation, setPossibleEncounters, setBalls, balls, po
         })
         setPlayerPokemons(updatedPlayerPokemons)
 
+        setIsGuardianEncounter(false)
+        setCurrentGuardianEncounter({})
+        setGuardianAllLevels([])
+        setCurrentGuardianLevel(0)
         setIsMapInit(false)
         setIsPlayerChoosen(false)
         setIsBattle(false)
@@ -940,7 +1021,7 @@ function Battle({ setCurrentLocation, setPossibleEncounters, setBalls, balls, po
                             ) : (shopOrMedic === 0 ?
                                 (
                                     <>
-                                        <Map visibleSliceOfAllMap={visibleSliceOfAllMap} setVisibleSliceOfAllMap={setVisibleSliceOfAllMap} visibleMap={visibleMap} setVisibleMap={setVisibleMap} locationsWithPositions={locationsWithPositions} setLocationsWithPositions={setLocationsWithPositions} steppedLocation={steppedLocation} setSteppedLocation={setSteppedLocation} playerPosition={playerPosition} setPlayerPosition={setPlayerPosition} allMap={allMap} setAllMap={setAllMap} setIsMapInit={setIsMapInit} isMapInit={isMapInit} activePanel={activePanel} setCombatLog={setCombatLog} isBattle={isBattle} setActivePanel={setActivePanel} setNar={setNar} setLocations={setLocations} locations={locations} combatLog={combatLog} setPossibleEncounters={setPossibleEncounters} setCurrentLocation={setCurrentLocation} setShopOrMedic={setShopOrMedic} setIsBattle={setIsBattle} />
+                                        <Map setIsGuardianEncounter={setIsGuardianEncounter} setCurrentGuardianEncounter={setCurrentGuardianEncounter} guardians={guardians} setGuardians={setGuardians} visibleSliceOfAllMap={visibleSliceOfAllMap} setVisibleSliceOfAllMap={setVisibleSliceOfAllMap} visibleMap={visibleMap} setVisibleMap={setVisibleMap} locationsWithPositions={locationsWithPositions} setLocationsWithPositions={setLocationsWithPositions} steppedLocation={steppedLocation} setSteppedLocation={setSteppedLocation} playerPosition={playerPosition} setPlayerPosition={setPlayerPosition} allMap={allMap} setAllMap={setAllMap} setIsMapInit={setIsMapInit} isMapInit={isMapInit} activePanel={activePanel} setCombatLog={setCombatLog} isBattle={isBattle} setActivePanel={setActivePanel} setNar={setNar} setLocations={setLocations} locations={locations} combatLog={combatLog} setPossibleEncounters={setPossibleEncounters} setCurrentLocation={setCurrentLocation} setShopOrMedic={setShopOrMedic} setIsBattle={setIsBattle} />
                                     </>
                                 ) : (shopOrMedic === "Shop" ?
                                     (

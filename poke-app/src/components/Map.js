@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect, useRef } from 'react'
 
-function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVisibleMap, locationsWithPositions, setLocationsWithPositions, setSteppedLocation, steppedLocation, setIsMapInit, playerPosition, setPlayerPosition, allMap, setAllMap, isMapInit, setActivePanel, setNar, setLocations, locations, combatLog, setPossibleEncounters, setCurrentLocation, setShopOrMedic, setIsBattle, isBattle, setCombatLog, activePanel }) {
+function Map({ setIsGuardianEncounter, setCurrentGuardianEncounter, guardians, setGuardians, visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVisibleMap, locationsWithPositions, setLocationsWithPositions, setSteppedLocation, steppedLocation, setIsMapInit, playerPosition, setPlayerPosition, allMap, setAllMap, isMapInit, setActivePanel, setNar, setLocations, locations, combatLog, setPossibleEncounters, setCurrentLocation, setShopOrMedic, setIsBattle, isBattle, setCombatLog, activePanel }) {
 
     const rowLength = 18
     const colLength = 7
@@ -21,8 +21,6 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
 
     const visibleMapRef = useRef(visibleMap)
     const playerPositionRef = useRef(playerPosition)
-
-
 
 
     //USEREFS
@@ -48,7 +46,7 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
 
             const initAllLocations = async () => {
 
-                const fetchLocations = async (pokeUrl, locationNrStart = 0, backgroundType = "glades", lakeNumbers = 0, rockNumbers = 0) => {
+                const fetchLocations = async (pokeUrl, locationNrStart = 0, backgroundType = "glades", lakeNumbers = 0, rockNumbers = 0, flameNumbers = 0, bushNumbers = 0) => {
                     try {
                         setLoading(true)
                         const response = await fetch(pokeUrl);
@@ -98,7 +96,7 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
 
                         const rocks = []
                         for (let i = 0; i < rockNumbers; i++) {
-                            lakes.push({
+                            rocks.push({
                                 name: `Rock${i}`,
                                 visited: false,
                                 type: "block",
@@ -106,10 +104,27 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
                             })
                         }
 
+                        const flames = []
+                        for (let i = 0; i < flameNumbers; i++) {
+                            flames.push({
+                                name: `Flame${i}`,
+                                visited: false,
+                                type: "block",
+                                background: "flame"
+                            })
+                        }
 
+                        const bushes = []
+                        for (let i = 0; i < bushNumbers; i++) {
+                            bushes.push({
+                                name: `Bush${i}`,
+                                visited: false,
+                                type: "block",
+                                background: "bush"
+                            })
+                        }
 
-
-                        allLocations.push(pokeCenterLocation1, pokeCenterLocation2, merchantLocation1, merchantLocation2, ...lakes, ...rocks)
+                        allLocations.push(pokeCenterLocation1, pokeCenterLocation2, merchantLocation1, merchantLocation2, ...lakes, ...rocks, ...flames, ...bushes)
 
                         return allLocations;
 
@@ -119,20 +134,89 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
                         setLoading(false)
                     }
                 }
-                setMidLocations(await fetchLocations('https://pokeapi.co/api/v2/location/', 0, "glades", 12, 12))
+                setMidLocations(await fetchLocations('https://pokeapi.co/api/v2/location/', 0, "glades"))
                 setTopLeftLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=100&limit=20", 100, "ruins"))
-                setTopLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=20&limit=20", 20, "glades", 3, 36))
+                setTopLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=20&limit=20", 20, "glades", 2, 36, 2, 2))
                 setTopRightLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=120&limit=20", 120, "ruins"))
-                setleftLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=40&limit=20", 40, "glades", 20, 20))
-                setRightLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=60&limit=20", 60, "glades", 20, 20))
+                setleftLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=40&limit=20", 40, "glades", 2, 2, 36, 2))
+                setRightLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=60&limit=20", 180, "glades", 2, 2, 2, 36))
                 setBottomLeftLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=140&limit=20", 140, "ruins"))
-                setBottomLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=80&limit=20", 80, "glades", 40, 2))
+                setBottomLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=80&limit=20", 80, "glades", 36, 2, 2, 2))
                 setBottomRightLocations(await fetchLocations("https://pokeapi.co/api/v2/location/?offset=160&limit=20", 160, "ruins"))
 
             }
             initAllLocations()
         }
     }, [])
+
+    //INIT GUARDIANS
+    useEffect(() => {
+        if (isMapInit) {
+            setGuardians({
+                fire: {
+                    position: 0,
+                    toAwake: 0,
+                    location: {
+                        name: "Fire Guardian",
+                        visited: false,
+                        type: "guardian",
+                        background: "fire-guardian"
+                    },
+                    guardianUrls: [
+                        "https://pokeapi.co/api/v2/pokemon/charmander",
+                        "https://pokeapi.co/api/v2/pokemon/charmeleon",
+                        "https://pokeapi.co/api/v2/pokemon/charizard"
+                    ]
+                },
+                water: {
+                    position: 0,
+                    toAwake: 0,
+                    location: {
+                        name: "Water Guardian",
+                        visited: false,
+                        type: "guardian",
+                        background: "water-guardian"
+                    },
+                    guardianUrls: [
+                        "https://pokeapi.co/api/v2/pokemon/squirtle",
+                        "https://pokeapi.co/api/v2/pokemon/wartortle",
+                        "https://pokeapi.co/api/v2/pokemon/blastoise"
+                    ]
+                },
+                rock: {
+                    position: 0,
+                    toAwake: 0,
+                    location: {
+                        name: "Rock Guardian",
+                        visited: false,
+                        type: "guardian",
+                        background: "rock-guardian"
+                    },
+                    guardianUrls: [
+                        "https://pokeapi.co/api/v2/pokemon/geodude ",
+                        "https://pokeapi.co/api/v2/pokemon/graveler ",
+                        "https://pokeapi.co/api/v2/pokemon/golem "
+                    ]
+                },
+                grass: {
+                    position: 0,
+                    toAwake: 0,
+                    location: {
+                        name: "Grass Guardian",
+                        visited: false,
+                        type: "guardian",
+                        background: "grass-guardian"
+                    },
+                    guardianUrls: [
+                        "https://pokeapi.co/api/v2/pokemon/bulbasaur ",
+                        "https://pokeapi.co/api/v2/pokemon/ivysaur ",
+                        "https://pokeapi.co/api/v2/pokemon/venusaur "
+                    ]
+                },
+            })
+        }
+    }, [])
+
 
     //INITIALIZE MAP
     const fillLocations = (i, j) => {
@@ -218,7 +302,7 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
                     })
                 })
 
-                const addPositionToLocations = (startI, startJ, section, background = "grass") => {
+                const addPositionToLocations = (startI, startJ, section, background = "grass", guardian) => {
                     let possiblePositions = []
                     for (let i = startI; i < startI + 7; i++) {
                         for (let j = startJ; j < startJ + 18; j++) {
@@ -229,9 +313,24 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
                         const randomPos = possiblePositions.splice(Math.floor(Math.random() * possiblePositions.length), 1)
                         initialLocationsWithPositions.push({
                             position: randomPos[0],
-                            location: l
+                            location: l,
+                            guardianType: guardian
                         })
                     })
+
+                    if (guardian) {
+                        const randomPos = possiblePositions.splice(Math.floor(Math.random() * possiblePositions.length), 1)
+                        let updatedGuardians = { ...guardians }
+                        updatedGuardians[guardian].position = randomPos[0]
+                        initialLocationsWithPositions.push({
+                            position: randomPos[0],
+                            type: "guardian",
+                            toAwake: updatedGuardians[guardian].toAwake,
+                            location: updatedGuardians[guardian].location,
+                            guardianUrls: updatedGuardians[guardian].guardianUrls
+                        })
+                        setGuardians(updatedGuardians)
+                    }
 
                     possiblePositions.map(p => {
                         initialLocationsWithPositions.push({
@@ -244,12 +343,12 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
                 }
 
                 addPositionToLocations(0, 0, topLeftLocations, "forest")
-                addPositionToLocations(0, 18, topLocations,)
+                addPositionToLocations(0, 18, topLocations, "grass", "rock")
                 addPositionToLocations(0, 36, topRightLocations, "desert")
-                addPositionToLocations(7, 0, leftLocations)
-                addPositionToLocations(7, 36, rightLocations)
+                addPositionToLocations(7, 0, leftLocations, "grass", "fire")
+                addPositionToLocations(7, 36, rightLocations, "grass", "grass")
                 addPositionToLocations(14, 0, bottomLeftLocations, "mud")
-                addPositionToLocations(14, 18, bottomLocations)
+                addPositionToLocations(14, 18, bottomLocations, "grass", "water")
                 addPositionToLocations(14, 36, bottomRightLocations, "winter")
 
                 //  setLocations(initialLocationsWithPositions)
@@ -381,9 +480,15 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
 
         setLoading(true)
 
-        //   let updatedLocations = [...locations]
         let updatedLocationWithPosition = [...locationsWithPositions]
         updatedLocationWithPosition.find(l => l.position === curLocation.position).location.visited = true
+
+        if (curLocation.guardianType) {
+            let updatedGuardians = { ...guardians }
+            updatedGuardians[curLocation.guardianType].toAwake--
+            updatedLocationWithPosition.find(l => l.position === updatedGuardians[curLocation.guardianType].position).toAwake--
+            setGuardians(updatedGuardians)
+        }
 
         let updatedCombatLog = [...combatLog]
         updatedCombatLog.push({
@@ -395,7 +500,7 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
             try {
                 const response = await fetch(`https://pokeapi.co/api/v2/location-area/${curLocation.location.locationNr}/`)
                 if (!response.ok) {
-                    throw new Error("fetching location info went wrong")
+                    throw new Error(`fetching went wrong -> https://pokeapi.co/api/v2/location-area/${curLocation.location.locationNr}/`)
                 }
                 const locationInfo = await response.json()
                 const possibleEncounters = locationInfo.pokemon_encounters
@@ -414,8 +519,34 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
         setIsMapInit(false)
         setLocationsWithPositions(updatedLocationWithPosition)
         setLoading(false)
+    }
+
+    const handleStepInGuardian = (curLocation) => {
+        if (curLocation.toAwake > 0) return
+        console.log(curLocation)
+        let updatedLocationWithPosition = [...locationsWithPositions]
+        updatedLocationWithPosition.find(l => l.position === curLocation.position).location.visited = true
+
+        let updatedCombatLog = [...combatLog]
+        updatedCombatLog.push({
+            pokemon: "",
+            text: `${curLocation.location.name}`
+        })
+
+
+        setCurrentLocation(curLocation.location.name)
+        setCurrentGuardianEncounter(curLocation)
+        setCombatLog(updatedCombatLog)
+        setActivePanel("mypokemons")
+        setShopOrMedic(0)
+        setIsMapInit(false)
+        setLocationsWithPositions(updatedLocationWithPosition)
+        setIsGuardianEncounter(true)
+        setIsBattle(true)
+
 
     }
+
 
     useEffect(() => {
         if (allMap.length > 0) {
@@ -442,6 +573,8 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
                     updatedLocationWithPosition.find(l => l.position === areaToMove.position).location.visited = true
                     setLocationsWithPositions(updatedLocationWithPosition)
                     setShopOrMedic(areaToMove.location.type)
+                } else if (areaToMove.location.type === "guardian" && !areaToMove.location.visited) {
+                    handleStepInGuardian(areaToMove)
                 }
             }
             else {
@@ -479,10 +612,16 @@ function Map({ visibleSliceOfAllMap, setVisibleSliceOfAllMap, visibleMap, setVis
                             ) : (a.type === "terrain" ?
                                 (
                                     <img key={j} className={`map-area-${j + 1} grass`} src={`./${a.terrain}.jpg`} />
-                                ) : (
-                                    <div key={j} className={`map-area-${j + 1} map-area ${a.location.visited ? "visited-location-area" : ""} ${a.location.background} `}>
-                                        <img className={`${a.location.type === "block" ? "location-block" : a.location.type === "Shop" || a.location.type === "Medic" ? "location-support" : "location-encounter"} location-background`} src={`./${a.location.background}.png`} />
-                                    </div>
+                                ) : (a.type === "guardian" ?
+                                    (
+                                        <div key={j} className={`map-area-${j + 1} map-area ${a.location.visited ? "visited-location-area" : ""} ${a.location.background}`}>
+                                            <img className={`location-background ${a.toAwake > 0 ? "" : "guardian"}`} src={a.toAwake > 0 ? "./grass.jpg" : `./${a.location.background}.png`} />
+                                        </div>
+                                    ) : (
+                                        <div key={j} className={`map-area-${j + 1} map-area ${a.location.visited ? "visited-location-area" : ""} ${a.location.background} `}>
+                                            <img className={`${a.location.type === "block" ? "location-block" : a.location.type === "Shop" || a.location.type === "Medic" ? "location-support" : "location-encounter"} location-background`} src={`./${a.location.background}.png`} />
+                                        </div>
+                                    )
                                 )
                             )
                         ))}
