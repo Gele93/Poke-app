@@ -3,6 +3,8 @@ import { useState, useEffect } from "react"
 import Menu from './components/Menu';
 import Main from './components/Main';
 
+//  "homepage": "https://gele93.github.io/Poke-app",
+
 
 function App() {
 

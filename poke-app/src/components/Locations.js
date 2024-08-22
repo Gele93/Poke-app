@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 function Locations({ setPossibleEncounters, setShopOrMedic, setCombatLog, combatLog, setCurrentLocation, isBattle, setIsBattle, setNar, capitalize, activePanel, setActivePanel, locations, setLocations, setIsGameWon, isGameWon }) {
-
+/*
     const [isLocationChosen, setIsLocationChosen] = useState(false)
 
     useEffect(() => {
@@ -68,22 +68,23 @@ function Locations({ setPossibleEncounters, setShopOrMedic, setCombatLog, combat
         setIsBattle(true)
     }
 
-
     return (
         <div className={`${activePanel === "location" ? "active" : null} location-container`}>
-            <h1 className="location-title">Locations</h1>
-            <ul className="locations">
-                {locations.map((location, i) => (
-                    <li key={location.name} className="location">
-                        <button id={i+1} disabled={location.visited} onClick={(e) => { handleLocationClick(e) }} className="location-button" type="button">{location.name}</button>
-                    </li>
-                ))}
-            </ul>
-
+        <h1 className="location-title">Locations</h1>
+        <ul className="locations">
+        {locations.map((location, i) => (
+            <li key={location.name} className="location">
+            <button id={i+1} disabled={location.visited} onClick={(e) => { handleLocationClick(e) }} className="location-button" type="button">{location.name}</button>
+            </li>
+        ))}
+        </ul>
+        
         </div>
-
-
+        
+        
     )
+    */
+   return <></>
 }
 
 export default Locations

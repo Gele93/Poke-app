@@ -56,7 +56,7 @@ function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, set
         <div className='main'>
             <div className='main-background-container'>
                 <img className="main-background" src="https://images-ext-1.discordapp.net/external/iSbMZhkLarMLz8uqBtoEVYXThcrkyUHCGjMo1bMoHzU/https/i.pinimg.com/originals/2b/3b/04/2b3b04771ccca26c3dd96d781b0117ca.jpg?format=webp&width=1177&height=662" />
-                <img className="main-logo" src="./mainlogo.png" />
+                <img className="main-logo" src="mainlogo.png" />
             </div>
             <div className="panel-container">
                 <MyPokemons
@@ -135,6 +135,9 @@ function Main({ setIsSound, isSound, battleAudio, setBattleAudio, idleAudio, set
                     setDefenseDuration={setDefenseDuration}
                     boostDuration={boostDuration}
                     setBoostDuration={setBoostDuration}
+                    setPossibleEncounters={setPossibleEncounters}
+                    setCurrentLocation={setCurrentLocation}
+
                 />
                 <Locations
                     setPossibleEncounters={setPossibleEncounters}

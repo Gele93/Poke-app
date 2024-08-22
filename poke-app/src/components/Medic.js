@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 
-function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemons }) {
+function Medic({ setIsMapInit, setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemons }) {
 
     const [medicNar, setMedicNar] = useState("")
     const [medicIndex, setMedicIndex] = useState(0)
@@ -177,6 +177,7 @@ function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemon
 
 
     const handleBackToMenuClick = () => {
+        setIsMapInit(false)
         setShopOrMedic(0)
     }
     const handleConfirmReleaseClick = () => {
@@ -196,7 +197,7 @@ function Medic({ setShopOrMedic, gold, setGold, playerPokemons, setPlayerPokemon
     }
     return (
         <div className='medic'>
-            <img className='joy' src='/joy.png' alt='joy' />
+            <img className='joy' src='joy.png' alt='joy' />
             <div className='medic-nar'>{medicNar}</div>
             <div className='medic-desk'></div>
             <div className='shop-title'>Poke Center</div>

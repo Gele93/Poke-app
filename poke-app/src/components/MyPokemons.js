@@ -99,7 +99,7 @@ function MyPokemons({ balls, isPokedexModalOpen, setIsPokedexModalOpen, enemy, s
                         </div>
                     ) : (
                         <div key={i}>
-                            <img src='/pokeball.png' className="pokeball" />
+                            <img src='pokeball.png' className="pokeball" />
                         </div>
                     )
                 ))}
@@ -111,22 +111,3 @@ function MyPokemons({ balls, isPokedexModalOpen, setIsPokedexModalOpen, enemy, s
 
 export default MyPokemons
 
-
-/*
-        <div className={`${activePanel === "mypokemons" ? "active" : null} player-poke-container`}>
-            <h1 className="player-poke-title">My pokemons</h1>
-            <div className="player-poke-list">
-                {playerPokemons.map((pokemon) => (
-                    <div key={pokemon.name} className="player-poke-wraper">
-                        <h2 className="player-poke-name">{pokemon.name}</h2>
-                        <img pokename={pokemon.name} onClick={(e) => handleMyPokemonClick(e)} className={`${pokemon.dead ? "dead" : null} player-poke-img`} src={pokemon.picFront} />
-                        <div id={`${pokemon.name}hp`} className="hp-side">
-                            <div id={`${pokemon.name}hp-left`} className="hp-left-side"></div>
-                            <div id={`${pokemon.name}hp-damage`} className="hp-damage-side"></div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <img onClick={() => setIsPokedexModalOpen(!isPokedexModalOpen)} className="pokekodex" src="pokedex.gif" />
-        </div>
-*/

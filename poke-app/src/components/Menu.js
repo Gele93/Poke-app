@@ -32,11 +32,11 @@ function Menu({ themeAudio, setThemeAudio, setIsSound, isSound, battleAudio, idl
     return (
         <div className="menu">
             <div className='background-container'>
-                <img className="background" src="/menubg.jpg" alt="" />
-                <img className="logo" src="./menulogo.png" alt="" />
+                <img className="background" src="menubg.jpg" alt="" />
+                <img className="logo" src="menulogo.png" alt="" />
             </div>
             <div className='description-container'>
-                <img className="oak-prof" src="./oakprof.png" />
+                <img className="oak-prof" src="oakprof.png" />
                 <ul className='description'>
                     <li className="description-li">Choose 3 starting pokemon & press Start!</li>
                     <li className="description-li">Select a location to travel</li>

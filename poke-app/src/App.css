@@ -396,12 +396,11 @@ opacity: 100%;
   justify-content: space-between;
   position: absolute;
   height: 75vh;
-  width: 55vw;
+  width: 75vw;
   background-color: rgba(255, 255, 255, 0.8); 
  /* background: linear-gradient(90deg, rgba(255, 40, 0, 0.5) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(0, 40, 255, 0.5) 100%); */
-  left: 50%;
+  left: 20vw;
   top: 5vh;
-  transform: translateX(-50%);
   border-radius: 50px;
   border: 2px solid black;
   box-shadow: 5px 5px 5px black;
@@ -1182,6 +1181,7 @@ left:5vw
   box-shadow: 5px 10px 10px black;
 }
 .merc-nar {
+  color: black;
   position: absolute;
   height: 10vh;
   width: 30vw;
@@ -1291,6 +1291,7 @@ left:5vw
   box-shadow: 5px 10px 10px black;
 }
 .medic-nar {
+  color: black;
   position: absolute;
   height: 10vh;
   width: 30vw;
@@ -1455,4 +1456,136 @@ left:5vw
 .drop-list {
   display: flex;
   flex-direction: row;
+}
+
+
+/*******MAP*******/
+.map-area {
+  display: flex;
+  width: 4vw;
+  height: 4vw;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.8vh;
+  color: white;
+  font-weight: 600;
+  background-color: #ffae5e;
+}
+.map {
+  position: absolute;
+  bottom: 1vw;
+  left:50%;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-rows: repeat(7, 4vw);
+  justify-content: center;
+  align-content: center;
+}
+.map-colum {
+  justify-items: stretch;
+  align-items: stretch;
+  display: grid;
+  grid-template-columns: repeat(18, 4vw);
+  justify-content: center;
+  align-items: center;
+}
+.visited-location-area {
+  color: black !important;
+  filter: grayscale(90%); 
+}
+.grass {
+  width: 4vw;
+}
+.ash {
+  width: 4vw;
+ background-image: url("../public/grass.jpg");
+ background-size: contain;
+}
+.location-background {
+ width: 4vw; 
+}
+.location-block {
+  width: 3.5vw;
+  border: 0.3vw solid black;
+}
+.location-encounter {
+  width: 3.5vw;
+  border: 0.3vw solid rgb(221, 71, 25);
+}
+.location-support {
+  width: 3.5vw;
+  border: 0.3vw solid rgb(18, 230, 28);
+}
+/*
+.ruin1 {
+  background-image: url("../public/ruin22.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: rgba(255, 255, 255, 0);
+}
+.ruin2 {
+  background-image: url("../public/ruin2.gif");
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: rgba(255, 255, 255, 0);
+}
+.ruin3 {
+  background-image: url("../public/ruin22.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: rgba(255, 255, 255, 0);
+}
+.ruin4 {
+  background-image: url("../public/ruin22.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: rgba(255, 255, 255, 0);
+}
+.ruin5 {
+  background-image: url("../public/ruin22.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: rgba(255, 255, 255, 0);
+}
+  */
+
+.medic {
+  background-image: url("../public/medic.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: rgba(255, 255, 255, 0);
+}
+.shop {
+  background-image: url("../public/shop.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: rgba(255, 255, 255, 0);
+}
+
+.loading {
+  position: absolute;
+  left:50%;
+  bottom:20vh;
+  transform: translateX(-50%);
+  width: fit-content;
+  font-weight: bold;
+  font-family: monospace;
+  font-size: 30px;
+  background:linear-gradient(90deg,#000 50%,#0000 0) right/200% 100%;
+  animation: l21 2s infinite linear;
+}
+.loading::before {
+  content :"Loading...";
+  color: #0000;
+  padding: 0 5px;
+  background: inherit;
+  background-image: linear-gradient(90deg,#fff 50%,#000 0);
+  -webkit-background-clip:text;
+          background-clip:text;
+}
+
+@keyframes l21{
+  100%{background-position: left}
 }

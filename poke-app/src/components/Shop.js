@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 
-function Shop({ balls, setBalls, setShopOrMedic, setHpPotAmount, setBoostPotAmount, isFirstFightDone, gold, setGold }) {
+function Shop({ setIsMapInit, balls, setBalls, setShopOrMedic, setHpPotAmount, setBoostPotAmount, isFirstFightDone, gold, setGold }) {
 
     const [mercNar, setMercNar] = useState("")
 
@@ -55,6 +55,7 @@ function Shop({ balls, setBalls, setShopOrMedic, setHpPotAmount, setBoostPotAmou
 
     const handleBackClick = () => {
         setShopOrMedic(0)
+        setIsMapInit(false)
     }
 
     const handleHpPotHover = () => {
@@ -86,17 +87,17 @@ function Shop({ balls, setBalls, setShopOrMedic, setHpPotAmount, setBoostPotAmou
             <div className='shop-items'>
                 <div className='shop-item'>
                     <div className='shop-item-price'>{hpPotPrice}🪙</div>
-                    <img onMouseOver={handleHpPotHover} onMouseOut={handleHpPotHoverOff} className='shop-item-pic' src='./hppot.png' />
+                    <img onMouseOver={handleHpPotHover} onMouseOut={handleHpPotHoverOff} className='shop-item-pic' src='hppot.png' />
                     <button onClick={handleBuyHpPot} className='shop-buy'>Buy</button>
                 </div>
                 <div className='shop-item'>
                     <div className='shop-item-price'>{boostPotPrice}🪙</div>
-                    <img onMouseOver={handleBoostPotHover} onMouseOut={handleBoostPotHoverOff} className='shop-item-pic' src='./boostpot.png' />
+                    <img onMouseOver={handleBoostPotHover} onMouseOut={handleBoostPotHoverOff} className='shop-item-pic' src='boostpot.png' />
                     <button onClick={handleBuyBoostPot} className='shop-buy'>Buy</button>
                 </div>
                 <div className='shop-item'>
                     <div className='shop-item-price'>{pokeballPrice}🪙</div>
-                    <img onMouseOver={handlePokeballHover} onMouseOut={handlePokeballHoverOff} className='shop-item-pic-ball' src='./pokeball.png' />
+                    <img onMouseOver={handlePokeballHover} onMouseOut={handlePokeballHoverOff} className='shop-item-pic-ball' src='pokeball.png' />
                     <button onClick={handleBuyPokeBall} className='shop-buy'>Buy</button>
                 </div>
             </div>

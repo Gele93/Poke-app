@@ -5,8 +5,9 @@ import Pokedexmodal from './Pokedexmodal'
 import Enemydexmodal from './Enemydex'
 import Shop from "./Shop"
 import Medic from './Medic'
+import Map from './Map'
 
-function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, setIsPokedexModalOpen, isPokedexModalOpen, enemy, setEnemy, setCombatLog, combatLog, isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
+function Battle({ setCurrentLocation, setPossibleEncounters, setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMedic, isSound, battleAudio, setBattleAudio, idleAudio, setIdleAudio, setIsPokedexModalOpen, isPokedexModalOpen, enemy, setEnemy, setCombatLog, combatLog, isCombatModalOpen, setIsCombatModalOpen, boostDuration, setBoostDuration, isMendDisabled, setIsMendDisabled, mendCd, setMendCd, defenseDuration, setDefenseDuration, capitalize, currentLocation, isSpecialDisabled, setIsSpecialDisabled, specialCd, setSpecialCd, isGameWon, setIsGameWon, locations, setLocations, setIsMenu, isBattle, setIsBattle, isPlayerChoosen, setIsPlayerChoosen, nar, setNar, choosenPokemon, setChoosenPokemon, activePanel, setActivePanel, playerPokemons, setPlayerPokemons }) {
 
     const [enemyDmg, setEnemyDmg] = useState(0)
     const [enemyCurHp, setEnemyCurHp] = useState(0)
@@ -39,6 +40,14 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
     const [hpPotDrop, setHpPotDrop] = useState(false)
     const [boostPotDrop, setBoostPotDrop] = useState(false)
     const [pokeballDrop, setPokeballDrop] = useState(false)
+    const [isMapInit, setIsMapInit] = useState(true)
+    const [allMap, setAllMap] = useState([])
+    const [playerPosition, setPlayerPosition] = useState([0, 0])
+    const [steppedLocation, setSteppedLocation] = useState({})
+    const [locationsWithPositions, setLocationsWithPositions] = useState([])
+    const [visibleMap, setVisibleMap] = useState([])
+    const [visibleSliceOfAllMap, setVisibleSliceOfAllMap] = useState([[7, 14], [18, 36]])
+
 
     useEffect(() => {
         const idle = new Audio('./idle.mp3');
@@ -487,6 +496,7 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
             nar = `Precision hit ${dmg} dmg`
         }
 
+        dmg = dmg * 999
 
         setIsAttackDisabled(true)
         setIsPlayerTurn(false)
@@ -713,6 +723,7 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
         })
         setPlayerPokemons(updatedPlayerPokemons)
 
+        setIsMapInit(false)
         setIsPlayerChoosen(false)
         setIsBattle(false)
         setHpPotDrop(false)
@@ -831,15 +842,15 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
         <div className={`${activePanel === "battle" ? "active" : null} battle-container`}>
             <div className='inventory'>
                 <div className='inv-slot'>
-                    <img className="inv-pic" src="./gold.png" />
+                    <img className="inv-pic" src="gold.png" />
                     <div className='inv-amount'>x {gold}</div>
                 </div>
                 <div className='inv-slot'>
-                    <img className="inv-pic" src="./hppot.png" />
+                    <img className="inv-pic" src="hppot.png" />
                     <div className='inv-amount'>x {hpPotAmount}</div>
                 </div>
                 <div className='inv-slot'>
-                    <img className="inv-pic" src="./boostpot.png" />
+                    <img className="inv-pic" src="boostpot.png" />
                     <div className='inv-amount'>x {boostPotAmount}</div>
                 </div>
             </div>
@@ -847,7 +858,7 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
                 <>
                     <div className='game-over'>Game over</div>
                     <button onClick={handleRestart} className='restart' type='button'>Restart</button>
-                    <img className='game-over-pic' src='./gameover.png' />
+                    <img className='game-over-pic' src='gameover.png' />
                 </>
             ) : (
                 <>
@@ -855,7 +866,7 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
                         <>
                             <div className='game-won'>You catched them all!</div>
                             <button onClick={handleRestart} className='restart' type='button'>Restart</button>
-                            <img className='game-won-pic' src='./gamewon.png' />
+                            <img className='game-won-pic' src='gamewon.png' />
                         </>) : (
                         <>
                             {isBattle ? (
@@ -885,7 +896,7 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
                                                             <button disabled={toggleSpecialDisabled()} onClick={(e) => handleSpecialAttack(e)} className="attack-button" type="button">Special Attack {isSpecialDisabled ? `(${specialCd})` : null}</button>
                                                             <button disabled={isAttackDisabled} onClick={(e) => handleDefend(e)} className="attack-button" type="button">Defend</button>
                                                             <button disabled={toggleMendDisabled()} onClick={(e) => handleMend(e)} className="attack-button" type="button">Mend {isMendDisabled ? `(${mendCd})` : null}</button>
-                                                            <button disabled={toggleCatchDisabled()} onClick={handleCatchClick} onMouseOver={handleCatchHover} onMouseOut={handleCatchHoverOff} className="attack-button catch-button" type="button">Catch!<img src='/pokeball.png' className={`${isCatchHover && "hover"} catch-pokeball`} /></button>
+                                                            <button disabled={toggleCatchDisabled()} onClick={handleCatchClick} onMouseOver={handleCatchHover} onMouseOut={handleCatchHoverOff} className="attack-button catch-button" type="button">Catch!<img src='pokeball.png' className={`${isCatchHover && "hover"} catch-pokeball`} /></button>
                                                         </div>
                                                         <div className='items-container'>
                                                             <div className='items-title'>Items</div>
@@ -926,28 +937,19 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
                                         null
                                     )}
                                 </>
-                            ) : (
-                                <>
-                                    {shopOrMedic === 0 ? (
-                                        <div className='shop-medic-buttons'>
-                                            <div className='shop-button-div'>
-                                                <img onClick={handleShopClick} onMouseOver={handleHoverShop} onMouseOut={handleHoverShopOff} className='shop-button-pic' src="/shop.png" />
-                                            </div>
-                                            <div className='medic-button-div'>
-                                                <img onClick={handleMedicClick} onMouseOver={handleHoverMedic} onMouseOut={handleHoverMedicOff} className="medic-button-pic" src="/medic.png" />
-
-                                            </div>
-                                        </div>
+                            ) : (shopOrMedic === 0 ?
+                                (
+                                    <>
+                                        <Map visibleSliceOfAllMap={visibleSliceOfAllMap} setVisibleSliceOfAllMap={setVisibleSliceOfAllMap} visibleMap={visibleMap} setVisibleMap={setVisibleMap} locationsWithPositions={locationsWithPositions} setLocationsWithPositions={setLocationsWithPositions} steppedLocation={steppedLocation} setSteppedLocation={setSteppedLocation} playerPosition={playerPosition} setPlayerPosition={setPlayerPosition} allMap={allMap} setAllMap={setAllMap} setIsMapInit={setIsMapInit} isMapInit={isMapInit} activePanel={activePanel} setCombatLog={setCombatLog} isBattle={isBattle} setActivePanel={setActivePanel} setNar={setNar} setLocations={setLocations} locations={locations} combatLog={combatLog} setPossibleEncounters={setPossibleEncounters} setCurrentLocation={setCurrentLocation} setShopOrMedic={setShopOrMedic} setIsBattle={setIsBattle} />
+                                    </>
+                                ) : (shopOrMedic === "Shop" ?
+                                    (
+                                        <Shop setIsMapInit={setIsMapInit} setBalls={setBalls} balls={balls} setShopOrMedic={setShopOrMedic} isFirstFightDone={isFirstFightDone} gold={gold} setGold={setGold} setHpPotAmount={setHpPotAmount} setBoostPotAmount={setBoostPotAmount} />
                                     ) : (
-                                        <>
-                                            {shopOrMedic === "Shop" ? (
-                                                <Shop setBalls={setBalls} balls={balls} setShopOrMedic={setShopOrMedic} isFirstFightDone={isFirstFightDone} gold={gold} setGold={setGold} setHpPotAmount={setHpPotAmount} setBoostPotAmount={setBoostPotAmount} />
-                                            ) : (
-                                                <Medic setShopOrMedic={setShopOrMedic} gold={gold} setGold={setGold} playerPokemons={playerPokemons} setPlayerPokemons={setPlayerPokemons} />
-                                            )}
-                                        </>
-                                    )}
-                                </>
+                                        <Medic setIsMapInit={setIsMapInit} setShopOrMedic={setShopOrMedic} gold={gold} setGold={setGold} playerPokemons={playerPokemons} setPlayerPokemons={setPlayerPokemons} />
+                                    )
+
+                                )
                             )}
                         </>
                     )}
@@ -982,22 +984,22 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
                     )}
                     <div className='drop-list'>
                         <div className='inv-slot'>
-                            <img className="inv-pic" src="./gold.png" />
+                            <img className="inv-pic" src="gold.png" />
                             <div className='inv-amount'>x {goldDrop}</div>
                         </div>
                         {hpPotDrop &&
                             <div className='inv-slot'>
-                                <img className="inv-pic" src="./hppot.png" />
+                                <img className="inv-pic" src="hppot.png" />
                             </div>
                         }
                         {boostPotDrop &&
                             <div className='inv-slot'>
-                                <img className="inv-pic" src="./boostpot.png" />
+                                <img className="inv-pic" src="boostpot.png" />
                             </div>
                         }
                         {pokeballDrop &&
                             <div className='inv-slot'>
-                                <img className="inv-pic" src="./pokeball.png" />
+                                <img className="inv-pic" src="pokeball.png" />
                             </div>
                         }
                         {isCatched &&
@@ -1015,3 +1017,33 @@ function Battle({ setBalls, balls, possibleEncounters, shopOrMedic, setShopOrMed
 }
 
 export default Battle
+
+
+
+
+
+
+
+
+//isBattle ? False ág
+/*
+                                    {shopOrMedic === 0 ? (
+                                        <div className='shop-medic-buttons'>
+                                            <div className='shop-button-div'>
+                                                <img onClick={handleShopClick} onMouseOver={handleHoverShop} onMouseOut={handleHoverShopOff} className='shop-button-pic' src="shop.png" />
+                                            </div>
+                                            <div className='medic-button-div'>
+                                                <img onClick={handleMedicClick} onMouseOver={handleHoverMedic} onMouseOut={handleHoverMedicOff} className="medic-button-pic" src="medic.png" />
+
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {shopOrMedic === "Shop" ? (
+                                                <Shop setBalls={setBalls} balls={balls} setShopOrMedic={setShopOrMedic} isFirstFightDone={isFirstFightDone} gold={gold} setGold={setGold} setHpPotAmount={setHpPotAmount} setBoostPotAmount={setBoostPotAmount} />
+                                            ) : (
+                                                <Medic setShopOrMedic={setShopOrMedic} gold={gold} setGold={setGold} playerPokemons={playerPokemons} setPlayerPokemons={setPlayerPokemons} />
+                                            )}
+                                        </>
+                                    )}
+*/
