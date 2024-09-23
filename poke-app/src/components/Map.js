@@ -155,7 +155,7 @@ function Map({ setIsGuardianEncounter, setCurrentGuardianEncounter, guardians, s
             setGuardians({
                 fire: {
                     position: 0,
-                    toAwake: 0,
+                    toAwake: 5,
                     location: {
                         name: "Fire Guardian",
                         visited: false,
@@ -170,7 +170,7 @@ function Map({ setIsGuardianEncounter, setCurrentGuardianEncounter, guardians, s
                 },
                 water: {
                     position: 0,
-                    toAwake: 0,
+                    toAwake: 5,
                     location: {
                         name: "Water Guardian",
                         visited: false,
@@ -185,7 +185,7 @@ function Map({ setIsGuardianEncounter, setCurrentGuardianEncounter, guardians, s
                 },
                 rock: {
                     position: 0,
-                    toAwake: 0,
+                    toAwake: 5,
                     location: {
                         name: "Rock Guardian",
                         visited: false,
@@ -200,7 +200,7 @@ function Map({ setIsGuardianEncounter, setCurrentGuardianEncounter, guardians, s
                 },
                 grass: {
                     position: 0,
-                    toAwake: 0,
+                    toAwake: 5,
                     location: {
                         name: "Grass Guardian",
                         visited: false,
@@ -598,6 +598,9 @@ function Map({ setIsGuardianEncounter, setCurrentGuardianEncounter, guardians, s
         }
 
     }
+
+    console.log(allMap)
+    console.log(visibleMap)
 
     return (
         <div className={`${activePanel === "map" ? "active" : null} map`}>
