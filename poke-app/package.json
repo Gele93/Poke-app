@@ -1,5 +1,6 @@
 {
   "name": "poke-app",
+  "homepage": "https://gele93.github.io/Poke-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

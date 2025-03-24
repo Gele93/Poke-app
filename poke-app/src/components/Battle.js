@@ -896,9 +896,6 @@ function Battle({ setCurrentLocation, setPossibleEncounters, setBalls, balls, po
     const handleMedicClick = () => {
         setShopOrMedic("Medic")
     }
-
-
-
     const handleHoverShop = () => {
         setHoverShopOrMedic("Merchant")
     }
