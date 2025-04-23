@@ -5,7 +5,6 @@
 
 ## 2. Technology Stack
 [![React][React-logo]][React-url]  
-[![Vite][Vite-logo]][Vite-url]  
 [![Create React App][CRA-logo]][CRA-url]  
 [![npm][npm-logo]][npm-url]  
 [![JavaScript][js-logo]][js-url]
